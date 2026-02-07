@@ -13,11 +13,13 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
         {/* Left side: Logo */}
         <div className="flex items-center">
-          <img
-            src="/images/Delphi Logo Full.png"
-            alt="Delphi"
-            className="h-10 w-auto object-contain"
-          />
+          <a href="/">
+            <img
+              src="/images/Delphi Logo Full.png"
+              alt="Delphi"
+              className="h-10 w-auto object-contain cursor-pointer"
+            />
+          </a>
         </div>
 
         {/* Center: Navigation Links */}
@@ -25,10 +27,10 @@ export default function Navbar() {
           <a href="/how-it-works" className="text-foreground/70 hover:text-foreground transition-colors">
             How It Works
           </a>
-          <a href="#" className="text-foreground/70 hover:text-foreground transition-colors">
+          <a href="/whitepaper" className="text-foreground/70 hover:text-foreground transition-colors">
             Whitepaper
           </a>
-          <a href="#" className="text-foreground/70 hover:text-foreground transition-colors">
+          <a href="/security" className="text-foreground/70 hover:text-foreground transition-colors">
             Security
           </a>
         </nav>

@@ -1,0 +1,407 @@
+# Whitepaper Page — Implementation Guide
+
+Follow each step in order. Match all styling (fonts, colors, spacing, components) to the existing site pages.
+
+The whitepaper is a long-form technical document (14 sections + abstract + conclusion). The page needs to prioritize readability, easy navigation, and a clean document-like feel while still living inside the site's shell.
+
+---
+
+## Step 1: Create the Page File & Route
+
+1. Create a new page file: `Whitepaper.tsx` (or `.jsx`) in the same directory as existing pages.
+2. Add a route for `/whitepaper` in the router config (same file/pattern used for other pages).
+3. Import the shared layout wrapper (header, footer, nav) used by other pages.
+4. Verify the page loads at `/whitepaper` with placeholder text before continuing.
+
+---
+
+## Step 2: Build the Page Layout Structure
+
+The whitepaper needs a different layout than typical marketing pages. Use a **two-column layout on desktop** and a **single-column layout on mobile**.
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  Site Header / Nav                                                    │
+├────────────────┬─────────────────────────────────────────────────────┤
+│                │                                                      │
+│  Sticky TOC    │  Document Content                                    │
+│  Sidebar       │                                                      │
+│  (left, ~250px)│  Title, Abstract, Sections 1–14, Conclusion          │
+│                │                                                      │
+│  - Abstract    │  (max-width ~720px for comfortable reading)          │
+│  - Section 1   │                                                      │
+│  - Section 2   │                                                      │
+│  - ...         │                                                      │
+│  - Conclusion  │                                                      │
+│                │                                                      │
+├────────────────┴─────────────────────────────────────────────────────┤
+│  Site Footer                                                          │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+1. **Left sidebar (desktop only):** Fixed/sticky table of contents, ~220–260px wide. Scrolls with the page but stays pinned to the viewport.
+2. **Main content column:** Centered, max-width 700–760px. This is the reading column — wider than a blog post but narrower than full-width to keep line lengths comfortable (~65–80 characters per line).
+3. **Mobile:** Sidebar collapses. Add a TOC dropdown or expandable menu at the top of the page instead.
+
+---
+
+## Step 3: Build the Sticky Table of Contents (Sidebar)
+
+The TOC is critical for a document this long. It lets readers jump between sections and know where they are.
+
+### 3a — TOC Content
+
+List every major section as a clickable link. Use `id` anchors on each section heading in the content column.
+
+```
+Table of Contents
+
+  Abstract
+  1. Context and Problem Domain
+  2. Architectural Principles
+  3. High-Level System Components
+     3.1 Primary Components
+     3.2 Comparative Architecture Patterns
+  4. Vault Contracts
+     4.1 Vault State and Accounting Model
+     4.2 Deposit and Withdrawal Semantics
+  5. Strategy Modules
+     5.1 Strategy Abstraction
+     5.2 Strategy Lifecycle
+  6. Execution and Automation Model
+     6.1 Permissionless Execution
+     6.2 Execution Predicates
+  7. Protocol Adapter Layer
+     7.1 Adapter Design
+     7.2 Adapter Composability
+  8. Oracle Integration
+     8.1 Oracle Usage Model
+     8.2 Oracle Failure Handling
+  9. Automation Incentives
+  10. Security Architecture
+      10.1 Modular Isolation
+      10.2 Upgrade Controls
+      10.3 Verification and Auditing
+  11. Governance Framework
+  12. Economic Neutrality and Non-Assumptive Design
+  13. Regulatory-Oriented Design Posture
+  14. Roadmap (Indicative, Non-Binding)
+  Conclusion
+```
+
+### 3b — Active Section Highlighting
+
+1. Use an **Intersection Observer** (or a scroll listener) to detect which section heading is currently in/near the viewport.
+2. Highlight the corresponding TOC link (bold text, accent-color left border, or background highlight).
+3. As the user scrolls, the active highlight moves through the TOC — giving a "you are here" indicator.
+
+### 3c — Click-to-Scroll
+
+1. Each TOC link calls `scrollIntoView({ behavior: 'smooth' })` on the target section's anchor.
+2. Account for the sticky header height with a `scroll-margin-top` on each section heading (e.g., `scroll-margin-top: 80px`).
+
+### 3d — Mobile TOC
+
+1. Replace the sidebar with a **sticky dropdown bar** at the top of the content area (below the site header).
+2. Shows the current section name. Tapping it opens a full TOC overlay or dropdown.
+3. After selecting a section, the dropdown closes and the page scrolls to the target.
+
+---
+
+## Step 4: Build the Document Header
+
+This is the top of the content column, above the first section.
+
+1. **Title:** "DELPHI Staking" — use the site's primary heading style, large and prominent.
+2. **Subtitle:** "A Deterministic Vault-Oriented DeFi Automation Protocol" — smaller, muted color, directly below the title.
+3. **Optional metadata row:** Consider adding a row below the subtitle with:
+   - Version number (e.g., "v1.0")
+   - Publication date
+   - A "Download PDF" link (if you plan to offer a PDF version — see Step 8)
+4. **Divider:** A horizontal rule or generous spacing to separate the header from the abstract.
+
+---
+
+## Step 5: Build the Abstract Section
+
+1. **Anchor id:** `id="abstract"`
+2. **Heading:** "Abstract"
+3. **Content — render as a single block of prose:**
+   > DELPHI Staking is a decentralized, non-custodial protocol architecture designed to coordinate automated interaction between user-deposited digital assets and heterogeneous on-chain financial primitives. The system is composed of modular vault contracts, execution strategy modules, protocol adapter interfaces, and auxiliary automation mechanisms that together enable programmable asset routing, state-based execution, and cross-protocol composability.
+
+   > The protocol is explicitly agnostic to economic outcomes and does not encode assumptions regarding asset performance, return generation, or risk profiles. All system behavior is defined by deterministic smart contract logic, executed within the constraints of the underlying blockchain environment, and subject to transparent on-chain verification.
+
+4. **Styling:** Consider a slightly larger font size or a subtle left-border accent to visually distinguish the abstract from regular body sections. It should feel like a summary callout.
+
+---
+
+## Step 6: Build Sections 1–14 and Conclusion
+
+Each section follows a consistent pattern. Build a reusable section component and render all sections from a data structure or sequentially.
+
+### Section Component Spec
+
+Every section needs:
+- An **anchor id** matching the TOC link (e.g., `id="section-1"`, `id="section-4-1"`)
+- A **section number + title** as a heading (e.g., "1. Context and Problem Domain")
+- **Body content** rendered as prose paragraphs
+- **Sub-sections** (e.g., 4.1, 4.2) rendered with a smaller heading level
+
+### Heading hierarchy:
+- Top-level sections (1, 2, 3…) → `<h2>`
+- Sub-sections (3.1, 4.1, 4.2…) → `<h3>`
+- Sub-sub-sections within comparisons (A, B, C…) → `<h4>`
+
+Below is the content for every section. Render all body text as paragraphs of prose — no bullet points in the output unless explicitly indicated below.
+
+---
+
+### Section 1 — Context and Problem Domain
+**Anchor:** `id="section-1"`
+
+**Content:**
+> Decentralized financial systems expose a growing set of programmable primitives — automated exchanges, lending markets, liquidity pools, and oracle networks — each governed by independent state machines and economic rules. While these primitives are natively composable, their coordinated use often requires repeated state evaluation, conditional execution across protocols, asset routing and reallocation, and transaction batching and optimization.
+
+> Absent an automation layer, these operations impose significant operational overhead and introduce fragmentation at the user and integrator level.
+
+> DELPHI Staking addresses this domain by providing a vault-centric execution framework that abstracts repetitive on-chain operations into reusable, parameterized components.
+
+---
+
+### Section 2 — Architectural Principles
+**Anchor:** `id="section-2"`
+
+**Content — render as four labeled principle blocks.** Use a consistent format for each: bold principle name followed by its description. These can be styled as a definition list, a grid of small cards, or simply bold-label paragraphs.
+
+| Principle | Description |
+|-----------|-------------|
+| **Vault-Centric Asset Accounting** | User assets are pooled within vault contracts that maintain proportional accounting through internal share representations. |
+| **Separation of Concerns** | Asset custody, execution logic, and protocol-specific interactions are isolated into discrete modules. |
+| **Deterministic Strategy Execution** | Execution pathways are governed by predefined logic evaluated against on-chain state, rather than discretionary or off-chain decision-making. |
+| **Composable Protocol Interfacing** | External protocol interactions are mediated through adapter contracts that standardize call semantics. |
+
+---
+
+### Section 3 — High-Level System Components
+**Anchor:** `id="section-3"`
+
+#### 3.1 Primary Components (`id="section-3-1"`)
+
+List the five primary components. This is one place where a styled list or icon grid is appropriate:
+
+1. **Vault Contracts** — asset aggregation and accounting
+2. **Strategy Modules** — executable logic defining permissible actions
+3. **Protocol Adapters** — standardized interfaces to external contracts
+4. **Automation Triggers** — permissionless execution incentives
+5. **Governance Controls** — parameter and module lifecycle management
+
+Add note: "Each component is independently deployable, auditable, and upgradable subject to governance constraints."
+
+#### 3.2 Comparative Architecture Patterns (`id="section-3-2"`)
+
+This is the longest sub-section — it contains **7 comparisons** (A through G). Build this as an **accordion** (same accordion component from the How It Works page) so the reader can expand one comparison at a time without being overwhelmed.
+
+**Accordion items:**
+
+Each accordion panel has:
+- **Title:** The comparison name (e.g., "Vault-Centric vs. Account-Centric Models")
+- **Two columns or blocks** inside: the DELPHI approach on the left/top, the contrasting pattern on the right/bottom
+- **A "Design Implication" callout** at the bottom of the panel
+
+| # | Accordion Title | DELPHI Pattern | Contrasting Pattern | Design Implication |
+|---|----------------|----------------|--------------------|--------------------|
+| A | Vault-Centric vs. Account-Centric Models | Assets aggregated into shared contract-level state machines. Users receive proportional accounting units. Execution operates on pooled liquidity. State transitions affect all participants proportionally. | Assets isolated per user account. Execution logic duplicated per account. Efficiency degrades with scale. Automation requires individualized triggers. | Vault-centric systems favor composability, gas efficiency, and strategy reuse; account-centric systems prioritize isolation and customization. |
+| B | Strategy Abstraction vs. Monolithic Execution | Execution logic encapsulated in modular strategy contracts. Strategies swappable without redeploying vaults. Multiple strategies may coexist. Logic upgrades isolated from accounting. | Execution logic embedded directly in asset-holding contracts. Upgrades require full redeployment or migration. Increased coupling between asset state and execution behavior. | Decoupling strategy logic reduces upgrade risk and enables iterative protocol evolution. |
+| C | Adapter-Based Integration vs. Native Coupling | External interactions mediated through standardized interfaces. Vault and strategy logic remain protocol-agnostic. Adapters encapsulate approval flows, call semantics, error handling. Protocol additions don't require core modification. | External calls hard-coded into execution logic. Protocol-specific assumptions permeate design. Expansion increases complexity and attack surface. | Adapter layers improve extensibility and reduce systemic fragility. |
+| D | Permissionless Execution vs. Privileged Operators | Any actor may trigger eligible execution paths. Eligibility enforced entirely by on-chain predicates. No reliance on trusted keepers or centralized schedulers. Incentive mechanisms encourage participation. | Execution restricted to designated addresses or services. Requires off-chain coordination and trust assumptions. Introduces liveness and censorship risk. | Permissionless execution maximizes decentralization and minimizes operational trust dependencies. |
+| E | Predicate-Gated Automation vs. Continuous Optimization | Execution conditional on explicit, deterministic state checks. No assumptions of optimality or outcome targeting. Emphasizes correctness and safety. | Implicitly aims to adjust toward perceived optimal configurations. Often requires subjective parameterization or off-chain logic. May embed economic assumptions. | Predicate-gated systems favor predictability and auditability over adaptive complexity. |
+| F | Governance-Constrained Upgradability vs. Mutable Control | Upgrades subject to time delays and on-chain approval. Change scope explicitly defined. Historical state transitions remain verifiable. | Immediate or opaque upgrades possible. Increased risk of unexpected behavior changes. Reduced auditability. | Governance-constrained upgrades balance flexibility with protocol integrity. |
+| G | Economic Neutrality vs. Outcome-Oriented Design | No encoded assumptions about returns, risk, or performance. Execution logic focuses on mechanical correctness. Economic behavior emerges externally. | Encodes assumptions about desirable economic states. Often includes implicit optimization targets. Increases regulatory and design complexity. | Economic neutrality reduces systemic assumptions and regulatory surface area. |
+
+After the accordion, add the **Summary** paragraph:
+> The DELPHI Staking protocol intentionally aligns with architectural patterns that emphasize deterministic execution, modular abstraction, composability, permissionless participation, and governance-bounded evolution — while explicitly avoiding patterns that introduce discretionary control, economic targeting, or protocol-specific coupling.
+
+---
+
+### Section 4 — Vault Contracts
+**Anchor:** `id="section-4"`
+
+#### 4.1 Vault State and Accounting Model (`id="section-4-1"`)
+> Vaults are smart contracts responsible for accepting deposits of supported digital assets, issuing internal accounting units ("shares"), tracking total managed balances, and enforcing withdrawal and redemption rules. Shares represent proportional claims on vault-held assets and are updated deterministically as the vault state evolves.
+
+#### 4.2 Deposit and Withdrawal Semantics (`id="section-4-2"`)
+> Deposits increase the vault's asset balance and result in the minting of shares according to the vault's accounting logic. Withdrawals burn shares and return assets based on current vault state. Vaults do not guarantee asset equivalence or temporal predictability; all outcomes are strictly a function of executed contract logic.
+
+---
+
+### Section 5 — Strategy Modules
+**Anchor:** `id="section-5"`
+
+#### 5.1 Strategy Abstraction (`id="section-5-1"`)
+> Strategy modules are smart contracts that define how and when vault-held assets may be interacted with external protocols. Strategies do not custody assets directly; instead, they operate via delegated permissions from vault contracts.
+
+Each strategy specifies: valid asset types, external protocol targets, execution conditions, and state transition constraints.
+
+#### 5.2 Strategy Lifecycle (`id="section-5-2"`)
+> Strategies may be activated, deactivated, or replaced according to governance-defined processes. Vaults may support one or more active strategies concurrently, subject to compatibility constraints.
+
+---
+
+### Section 6 — Execution and Automation Model
+**Anchor:** `id="section-6"`
+
+#### 6.1 Permissionless Execution (`id="section-6-1"`)
+> Execution of strategy actions is designed to be permissionless. Any externally owned account or contract may trigger eligible actions when execution predicates are satisfied. This model minimizes reliance on privileged actors and enables decentralized upkeep.
+
+#### 6.2 Execution Predicates (`id="section-6-2"`)
+> Strategy execution is gated by on-chain predicates, which may include asset balance thresholds, time-based intervals, external protocol state variables, and oracle-provided data inputs. If predicates are satisfied, execution paths are unlocked; otherwise, calls revert deterministically.
+
+---
+
+### Section 7 — Protocol Adapter Layer
+**Anchor:** `id="section-7"`
+
+#### 7.1 Adapter Design (`id="section-7-1"`)
+> Protocol adapters abstract the idiosyncrasies of external DeFi protocols by exposing standardized interfaces for asset deposits and withdrawals, liquidity position management, reward claim functions, and position unwinding. Adapters are intentionally narrow in scope to reduce attack surface.
+
+#### 7.2 Adapter Composability (`id="section-7-2"`)
+> Adapters may be reused across multiple strategies and vaults, provided interface compatibility is maintained. This enables composability without requiring vault-level awareness of protocol-specific logic.
+
+---
+
+### Section 8 — Oracle Integration
+**Anchor:** `id="section-8"`
+
+#### 8.1 Oracle Usage Model (`id="section-8-1"`)
+> Strategies may reference decentralized oracle feeds to obtain external data necessary for predicate evaluation or parameter computation. Oracle data is treated as input signals, not authoritative truth, and is always subject to bounds checking and sanity constraints.
+
+#### 8.2 Oracle Failure Handling (`id="section-8-2"`)
+> The protocol incorporates defensive patterns such as staleness detection, value bounds enforcement, and graceful execution degradation. No strategy assumes oracle availability or correctness as a prerequisite for safety.
+
+---
+
+### Section 9 — Automation Incentives
+**Anchor:** `id="section-9"`
+
+> To encourage timely execution of eligible actions, the protocol may incorporate incentive mechanisms that compensate callers for successful execution. Incentive parameters are defined at the strategy or vault level and are fully transparent on-chain. Automation incentives do not convey discretionary authority or managerial control.
+
+---
+
+### Section 10 — Security Architecture
+**Anchor:** `id="section-10"`
+
+#### 10.1 Modular Isolation (`id="section-10-1"`)
+> By isolating vault accounting, strategy execution, and protocol adapters, the protocol reduces correlated failure risk. Compromise of one module does not imply compromise of the entire system.
+
+#### 10.2 Upgrade Controls (`id="section-10-2"`)
+> Upgradable components are subject to time-delayed governance actions, on-chain signaling, and publicly auditable change logs. Immutable deployments are preferred where practical.
+
+#### 10.3 Verification and Auditing (`id="section-10-3"`)
+> Security assurance includes static analysis, differential testing, third-party audits, and continuous monitoring of deployed contracts. Audit artifacts are published alongside deployment metadata.
+
+---
+
+### Section 11 — Governance Framework
+**Anchor:** `id="section-11"`
+
+> Governance mechanisms, if enabled, are expected to control strategy approval and retirement, adapter whitelisting, parameter tuning, and upgrade authorization. Governance does not exercise discretionary control over individual user positions or execution timing.
+
+---
+
+### Section 12 — Economic Neutrality and Non-Assumptive Design
+**Anchor:** `id="section-12"`
+
+> The protocol intentionally avoids encoding assumptions regarding asset valuation trajectories, market efficiency, risk reduction, or outcome predictability. All economic results arise solely from smart contract execution and external protocol behavior.
+
+---
+
+### Section 13 — Regulatory-Oriented Design Posture
+**Anchor:** `id="section-13"`
+
+> DELPHI Staking is designed as a non-custodial smart contract system, an automation and execution framework, and an infrastructure-layer protocol. It does not function as an investment vehicle, advisory service, broker, or centralized intermediary.
+
+---
+
+### Section 14 — Roadmap (Indicative, Non-Binding)
+**Anchor:** `id="section-14"`
+
+> Future work may include expanded strategy libraries, cross-chain vault abstractions, developer tooling and SDKs, and formal governance instantiation. All development is subject to security review and ecosystem readiness.
+
+---
+
+### Conclusion
+**Anchor:** `id="conclusion"`
+
+> DELPHI Staking formalizes a vault-based automation paradigm for decentralized financial systems, emphasizing determinism, modularity, and composability. By separating asset accounting, execution logic, and protocol interfacing, the protocol aims to serve as a generalized coordination layer for on-chain financial activity without embedding economic assumptions or outcome-oriented guarantees.
+
+---
+
+## Step 7: Typography & Reading Experience
+
+This page is a long-form document, not a marketing page. Optimize for sustained reading.
+
+1. **Body font size:** 16–18px. If the site's default body size is smaller (e.g., 14px), bump it up for this page.
+2. **Line height:** 1.6–1.8 for body text.
+3. **Paragraph spacing:** Generous bottom margin between paragraphs (1–1.5em).
+4. **Max content width:** 700–760px. Do not let body text stretch full-width.
+5. **Heading spacing:** Section headings (`<h2>`) should have significant top margin (3–4em) to clearly separate sections. Sub-section headings (`<h3>`) get moderate top margin (2em).
+6. **Blockquote / callout style:** The "Design Implication" lines in the accordion (Section 3.2) should use a callout or blockquote treatment — left border accent, slightly muted background.
+7. **Section numbers:** Render section numbers (1., 2., 3.1, etc.) in a muted color or lighter weight so the title text is the primary focus.
+
+---
+
+## Step 8: Optional Enhancements
+
+Implement these only if time allows or if the team requests them.
+
+### 8a — Download as PDF
+1. Add a "Download PDF" button in the document header (Step 4).
+2. Either pre-generate a PDF from the whitepaper content, or use a client-side library (e.g., `html2pdf.js` or `react-pdf`) to generate it on demand.
+3. Style the PDF to match the on-page reading experience.
+
+### 8b — Copy Link to Section
+1. When hovering on any section heading, show a small link icon (🔗 or a chain icon).
+2. Clicking it copies the URL with the anchor hash (e.g., `yoursite.com/whitepaper#section-4-1`) to the clipboard.
+3. Show a brief "Copied!" toast confirmation.
+
+### 8c — Reading Progress Bar
+1. Add a thin progress bar at the very top of the page (below the site header or at the browser top).
+2. Fill width from 0–100% based on scroll position through the document.
+3. Gives the reader a sense of how far through the document they are.
+
+### 8d — Estimated Reading Time
+1. Calculate word count of the full document (~2,800 words).
+2. Display estimated reading time in the document header metadata row (e.g., "~12 min read").
+
+---
+
+## Step 9: Responsive & Polish
+
+1. **Desktop (≥1024px):** Two-column layout — sticky sidebar TOC + content column.
+2. **Tablet (768–1023px):** Sidebar collapses. Use a sticky top-bar TOC dropdown instead. Content column expands to fill.
+3. **Mobile (<768px):** Single column. Sticky TOC dropdown at top. Full-width content with appropriate padding (16–24px).
+4. **Spacing:** Match vertical rhythm and padding to other site pages.
+5. **Navigation:** Add "Whitepaper" to the site nav/menu. Consider placing it under a "Resources" or "Docs" dropdown if the nav is getting crowded.
+6. **Smooth scroll:** Ensure all TOC click-to-scroll works cleanly across devices, accounting for sticky header heights.
+
+---
+
+## Step 10: QA Checklist
+
+Before marking as done, verify:
+
+- [ ] Page loads at `/whitepaper` with no console errors.
+- [ ] Sticky sidebar TOC renders on desktop and highlights the active section on scroll.
+- [ ] Mobile TOC dropdown works and scrolls to correct sections.
+- [ ] All 14 sections + abstract + conclusion are present with correct content.
+- [ ] Section 3.2 accordion opens/closes correctly with all 7 comparison panels (A–G).
+- [ ] Every TOC link scrolls to the correct anchor with proper offset for sticky header.
+- [ ] Typography is comfortable for long reading (font size, line height, max-width).
+- [ ] Section numbers appear in headings and match the TOC.
+- [ ] "Design Implication" callouts in section 3.2 are visually distinct.
+- [ ] Page heading and subtitle match site heading styles.
+- [ ] No placeholder or lorem ipsum text remains.
+- [ ] Page is accessible from the site navigation.
+- [ ] Page renders correctly on desktop, tablet, and mobile breakpoints.
+- [ ] (If implemented) PDF download works and produces a clean document.
+- [ ] (If implemented) Copy-link-to-section works and copies correct URL.

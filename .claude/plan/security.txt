@@ -1,0 +1,279 @@
+# Security Page — Implementation Guide
+
+Follow each step in order. Match all styling (fonts, colors, spacing, components) to the existing site pages.
+
+This page communicates trust. The tone should be confident but not boastful — factual, clear, and reassuring. Avoid jargon-heavy language; explain what protects users and why it matters. Mention specific technologies only when they add credibility.
+
+---
+
+## Step 1: Create the Page File & Route
+
+1. Create a new page file: `Security.tsx` (or `.jsx`) in the same directory as existing pages.
+2. Add a route for `/security` in the router config (same file/pattern used for other pages).
+3. Import the shared layout wrapper (header, footer, nav) used by other pages.
+4. Verify the page loads at `/security` with placeholder text before continuing.
+
+---
+
+## Step 2: Build the Hero Section
+
+1. **Heading:** "Security"
+2. **Subheading:** "How DELPHI protects your assets at every layer"
+3. **Intro paragraph — render below the subheading:**
+
+> Security isn't a feature we added on top — it's the foundation everything else is built on. From the moment you deposit to the moment you withdraw, every interaction is governed by audited smart contracts, transparent on-chain logic, and layered safeguards designed to minimize risk at every level.
+
+> No protocol can eliminate risk entirely — DeFi operates on public blockchains with real economic exposure, and that comes with inherent uncertainty. What we can do is build with discipline: reduce attack surface, enforce constraints in code, and make everything transparent enough that you can evaluate the risks for yourself.
+
+4. **Styling:** Match the hero pattern from other pages (How It Works, etc.). Keep it clean — no background images or illustrations needed. The confidence comes from the words.
+
+---
+
+## Step 3: Build the "Security at Every Step" Section
+
+This section mirrors the deposit → automation → withdraw flow from the How It Works page, but reframed through a security lens. Build it as **three cards or blocks** arranged horizontally on desktop (stacked on mobile), each with an icon, a title, and a short paragraph.
+
+### Card 1 — Deposit
+
+**Icon suggestion:** Shield or lock icon
+
+**Title:** "Secure Deposits"
+
+**Copy:**
+> When you deposit tokens into a DELPHI vault, your assets are held by a non-custodial smart contract — not a company, not a team, not a centralized server. The vault contract has been audited and verified on-chain, meaning anyone can inspect exactly how it handles funds. No human intermediary ever touches your assets.
+
+> That said, smart contracts carry their own risks. Bugs, unforeseen edge cases, or vulnerabilities in the Ethereum ecosystem itself can affect any protocol. Audits and verification reduce this risk significantly, but they do not eliminate it — which is why we layer multiple safeguards on top of each other.
+
+### Card 2 — Vault Operations
+
+**Icon suggestion:** Gear with a checkmark, or a circuit/node icon
+
+**Title:** "Protected Automation"
+
+**Copy:**
+> While your assets are working inside the vault, every action — rebalancing, compounding, moving capital between strategies — is executed by smart contracts operating within strict predefined rules. No one can redirect funds to an unauthorized address. Automation triggers are permissionless but gated by on-chain conditions, so actions only execute when the correct criteria are met.
+
+> Because vaults interact with external DeFi protocols (lending markets, liquidity pools, AMMs), your assets are also exposed to the risks of those protocols. A vulnerability or failure in an integrated protocol can affect vault positions. DELPHI mitigates this through allocation caps and the ability to withdraw from compromised strategies, but external protocol risk can never be fully controlled.
+
+### Card 3 — Withdrawal
+
+**Icon suggestion:** Open lock or outbound arrow with a shield
+
+**Title:** "Withdraw Anytime"
+
+**Copy:**
+> Your ability to withdraw is never restricted. There are no lockups, no approval queues, and no dependency on a third party to release your funds. Withdrawals are processed directly by the vault contract — you send the transaction, you receive your assets. This is enforced at the contract level and cannot be overridden.
+
+---
+
+## Step 4: Build the "How We Protect You" Section
+
+This is the core of the page — a deeper look at the security architecture in approachable language. Build as **six blocks** in a two-column grid on desktop (stacked on mobile). Each block has an icon, a heading, and 2–3 short paragraphs.
+
+### Section heading: "How We Protect You"
+
+### Section intro copy:
+> DeFi is powerful, but it's not without risk. Smart contract vulnerabilities, volatile markets, oracle failures, and external protocol exploits are real possibilities in any decentralized system. We don't pretend otherwise. Instead, we build with the assumption that things can go wrong — and design every layer to limit the damage when they do.
+
+---
+
+### Block 1 — Non-Custodial Architecture
+
+**Icon suggestion:** Key or wallet icon
+
+**Heading:** "Your keys, your assets"
+
+**Copy:**
+> DELPHI is non-custodial by design. That means we never hold, manage, or have access to your private keys or funds. Your assets live in smart contracts that only you can withdraw from.
+
+> Unlike centralized platforms where a company controls the treasury, DELPHI vaults are autonomous contracts on the Ethereum blockchain. There is no back door, no admin override for withdrawals, and no scenario in which the team can move user funds.
+
+---
+
+### Block 2 — Modular Isolation
+
+**Icon suggestion:** Grid or building-blocks icon
+
+**Heading:** "Isolated by design"
+
+**Copy:**
+> The protocol is built as a set of independent modules — vault contracts handle accounting, strategy contracts handle deployment logic, and adapter contracts handle communication with external protocols. Each module is a separate smart contract with its own scope and permissions.
+
+> This means a vulnerability in one strategy doesn't automatically compromise the vault or other strategies. Risk is contained by architecture, not just by hope.
+
+---
+
+### Block 3 — Audits & Verification
+
+**Icon suggestion:** Magnifying glass or checkmark-document icon
+
+**Heading:** "Audited and verified"
+
+**Copy:**
+> All core contracts undergo third-party security audits before deployment. Audit reports are published publicly so anyone can review the findings.
+
+> Beyond audits, the protocol uses static analysis tools, differential testing, and continuous monitoring of deployed contracts to catch issues before and after launch. Every contract is verified on Etherscan, making the source code fully readable and inspectable by anyone.
+
+> It's important to understand that audits are not guarantees. They significantly reduce the likelihood of vulnerabilities, but no audit can certify that a smart contract is perfectly safe. This is true across all of DeFi — which is why we treat audits as one layer in a broader security strategy, not the only one.
+
+---
+
+### Block 4 — On-Chain Guardrails
+
+**Icon suggestion:** Barrier or guardrail icon
+
+**Heading:** "Built-in limits and safeguards"
+
+**Copy:**
+> Vaults enforce hard limits at the contract level. Each strategy has an allocation cap — a maximum percentage of the vault's total assets it can hold. Exposure to any single external protocol is also bounded, preventing dangerous over-concentration.
+
+> These guardrails are enforced by the smart contract code itself. They can't be bypassed by keepers, bots, or even governance — they're hardcoded rules that every transaction must satisfy.
+
+---
+
+### Block 5 — Circuit Breakers & Emergency Controls
+
+**Icon suggestion:** Power/pause button or emergency-stop icon
+
+**Heading:** "Emergency safeguards"
+
+**Copy:**
+> If something unexpected happens — a vulnerability in an external protocol, unusual market conditions, or a detected anomaly — the vault can be paused. When paused, new deposits and strategy deployments halt immediately, but withdrawals remain fully active. You can always get your assets out.
+
+> Emergency actions like pausing or removing a compromised strategy require multi-signature authorization through a Gnosis Safe multisig. No single person or key can trigger these actions alone, preventing both accidents and abuse.
+
+---
+
+### Block 6 — Oracle Safety
+
+**Icon suggestion:** Signal/antenna or data-feed icon
+
+**Heading:** "Trusted data, verified twice"
+
+**Copy:**
+> When vaults need external data — such as token prices for rebalancing decisions — they rely on decentralized oracle networks like Chainlink. But the protocol never trusts data blindly.
+
+> Every oracle input passes through staleness checks (is this data recent enough?) and bounds enforcement (is this value within a reasonable range?). If an oracle feed goes stale or returns suspicious data, the vault pauses affected operations rather than acting on bad information.
+
+> Oracle manipulation and data feed failures are among the most common attack vectors in DeFi. While these safeguards dramatically reduce exposure, the reliance on any external data source introduces a degree of risk that cannot be fully eliminated — only managed.
+
+---
+
+## Step 5: Build the "Governance & Upgrades" Section
+
+This section addresses the common concern: "Can the team just change the rules?"
+
+### Section heading: "Governance & Upgrades"
+
+### Section intro copy:
+> Protocols evolve. New strategies get added, parameters get tuned, and external conditions change. But upgrades to DELPHI are never instant or unilateral — they're governed by a transparent, constrained process.
+
+### Build as two side-by-side blocks on desktop (stacked on mobile):
+
+---
+
+**Block A — Controlled Upgrades**
+
+**Heading:** "Time-locked and transparent"
+
+**Copy:**
+> Any upgrade to the protocol — adding a new strategy, adjusting allocation caps, whitelisting a new protocol adapter — goes through a time-delayed governance process. Changes are proposed on-chain, visible to everyone, and subject to a waiting period before they take effect.
+
+> This gives users and the community time to review proposed changes and react before anything goes live. There are no silent updates or surprise modifications.
+
+---
+
+**Block B — Scoped Permissions**
+
+**Heading:** "No single point of control"
+
+**Copy:**
+> The protocol uses role-based access control to separate permissions. Keepers can trigger rebalancing actions but can't move funds. Allocators can adjust strategy weights but can't deploy new contracts. Guardians can pause the system in an emergency but can't withdraw assets.
+
+> No single role has full control. And the most sensitive actions — like upgrading core contracts — require multi-signature approval with enforced time delays.
+
+---
+
+## Step 6: Build the "Transparency" Section
+
+Short, punchy section reinforcing that everything is verifiable.
+
+### Section heading: "Full Transparency"
+
+**Copy — render as a single paragraph or a short set of statements:**
+
+> Every vault position, every strategy allocation, and every transaction is recorded on the Ethereum blockchain. There is no off-chain activity, no hidden leverage, and no opaque decision-making. You can verify the state of your assets at any time using any block explorer.
+
+> DELPHI doesn't ask you to trust us. It's built so you don't have to.
+
+---
+
+## Step 7: Build the "Understanding the Risks" Section
+
+This section is critical for credibility. It shows honesty and positions DELPHI as a protocol that respects its users enough to be upfront. Use a slightly different visual treatment — a muted background, a bordered card, or a callout-style container — to signal that this section is important and distinct from the marketing above.
+
+### Section heading: "Understanding the Risks"
+
+**Copy — render as prose paragraphs:**
+
+> DELPHI is built to minimize risk — but no DeFi protocol can eliminate it. Using any decentralized application involves inherent risks that every user should understand before depositing funds.
+
+> **Smart contract risk.** Despite audits, testing, and formal verification, smart contracts may contain undiscovered vulnerabilities. This applies to DELPHI's own contracts as well as every external protocol the vaults interact with.
+
+> **Market risk.** The value of digital assets is volatile. Token prices can move sharply and unpredictably. DELPHI vaults do not protect against market downturns — if the underlying assets lose value, your position loses value too.
+
+> **Protocol and composability risk.** Vaults deploy capital into third-party DeFi protocols. If one of those protocols suffers an exploit, a governance attack, or an economic failure, assets deployed to that protocol may be affected. Modular isolation and allocation caps reduce this exposure, but they cannot prevent it entirely.
+
+> **Blockchain and network risk.** DELPHI operates on the Ethereum blockchain. Network congestion, high gas costs, consensus bugs, or changes to the Ethereum protocol itself could affect the availability or cost of interacting with the vaults.
+
+> **Regulatory risk.** The regulatory landscape for decentralized finance is evolving. Changes in law or enforcement actions in any jurisdiction could affect the protocol, its availability, or the assets it supports.
+
+> We build with every safeguard we can. But the honest truth is that DeFi is still an emerging space, and using it means accepting a level of risk that does not exist in traditional finance. Only deposit what you can afford to lose, and take the time to understand how the protocol works before committing capital.
+
+**Styling notes:**
+- Consider rendering the bold risk labels ("Smart contract risk.", "Market risk.", etc.) as inline bold text at the start of each paragraph, not as separate headings. This keeps the section flowing as prose rather than feeling like a legal document.
+- The final paragraph should feel like a direct, honest statement — slightly heavier weight or slightly larger size is fine, but don't overdo it.
+
+---
+
+## Step 8: Build the CTA Section
+
+1. **Heading:** "Ready to get started?"
+2. **Two buttons side by side:**
+   - **Primary CTA:** "View Vaults" — links to the vaults page.
+   - **Secondary CTA:** "Read the Whitepaper" — links to `/whitepaper`.
+3. Match button styles to existing site CTAs.
+
+---
+
+## Step 9: Responsive & Polish
+
+1. **Desktop (≥1024px):** "How We Protect You" renders as a 2-column grid (3 rows × 2 blocks). "Governance & Upgrades" renders as 2 side-by-side blocks. "Security at Every Step" renders as 3 horizontal cards.
+2. **Tablet (768–1023px):** Grids collapse to single column. Cards stack vertically.
+3. **Mobile (<768px):** Full single column. Generous vertical spacing between blocks. Padding 16–24px.
+4. **Icons:** If the site uses an icon library (Lucide, Heroicons, Phosphor, etc.), pick icons from that set. If not, simple SVG icons or even no icons — the copy carries the message.
+5. **Spacing:** Generous whitespace between sections. This page should feel calm and confident, not dense.
+6. **Navigation:** Add "Security" to the site nav. Consider grouping it with "Whitepaper" under a "Resources" or "Learn" dropdown if the nav is getting long.
+
+---
+
+## Step 10: QA Checklist
+
+Before marking as done, verify:
+
+- [ ] Page loads at `/security` with no console errors.
+- [ ] Hero section heading, intro paragraph, and risk acknowledgment render correctly.
+- [ ] "Security at Every Step" shows 3 cards horizontally on desktop, stacked on mobile.
+- [ ] All 3 cards include their risk-aware follow-up paragraphs.
+- [ ] "How We Protect You" renders as a 2-column grid on desktop, single column on mobile.
+- [ ] "How We Protect You" section intro includes the risk-aware lead-in paragraph.
+- [ ] All 6 protection blocks have icons, headings, and correct copy (including risk notes in Audits and Oracle Safety).
+- [ ] "Governance & Upgrades" shows 2 side-by-side blocks on desktop, stacked on mobile.
+- [ ] "Full Transparency" section renders as clean prose.
+- [ ] "Understanding the Risks" section is visually distinct (callout/card/muted background) and contains all 5 risk categories + closing paragraph.
+- [ ] Both CTA buttons link to the correct pages.
+- [ ] Icons are consistent with the site's icon set.
+- [ ] All copy is final — no placeholder text remaining.
+- [ ] Page is accessible from the site navigation.
+- [ ] Heading styles, colors, and spacing match other site pages.
+- [ ] Page renders correctly across desktop, tablet, and mobile breakpoints.

@@ -1,8 +1,8 @@
 export default function Footer() {
   return (
-    <footer className="mt-24 bg-primary relative overflow-hidden">
+    <footer className="mt-24 relative overflow-hidden" style={{ backgroundColor: '#3d3d3d' }}>
       {/* Subtle gradient overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-accent/20 opacity-50" />
+      <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/10 opacity-50" />
 
       {/* Noise texture overlay */}
       <div
