@@ -86,7 +86,7 @@ export default function Home() {
             className="text-6xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Delphi Staking
+            DELPHI Vaults
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed">
             Connect. Deposit. Done.

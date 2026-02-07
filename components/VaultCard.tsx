@@ -1,7 +1,8 @@
 "use client";
 
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface VaultCardProps {
   assetName: string;
@@ -25,6 +26,7 @@ export default function VaultCard({
   onDeposit
 }: VaultCardProps) {
   const router = useRouter();
+  const [showTvlTooltip, setShowTvlTooltip] = useState(false);
 
   const handleCardClick = () => {
     router.push(`/vault/${vaultAddress}`);
@@ -40,10 +42,16 @@ export default function VaultCard({
   return (
     <div
       onClick={handleCardClick}
-      className={`group relative bg-card border border-border rounded-lg p-8 hover:shadow-xl transition-all duration-500 opacity-0 animate-fade-in-up animate-delay-${index * 100 + 300} cursor-pointer`}
+      className={`group relative bg-card border border-border rounded-lg p-8 hover:shadow-xl hover:border-primary/30 transition-all duration-500 opacity-0 animate-fade-in-up animate-delay-${index * 100 + 300} cursor-pointer`}
     >
       {/* Subtle top accent */}
       <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+
+      {/* View Details indicator - appears on hover */}
+      <div className="absolute top-4 right-4 flex items-center gap-1.5 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <span>View Details</span>
+        <ArrowUpRight className="w-3.5 h-3.5" />
+      </div>
 
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-4">
@@ -78,18 +86,32 @@ export default function VaultCard({
           </div>
         </div>
 
-        <div>
-          <div className="text-sm text-muted-foreground mb-1 tracking-wide">Total Value Locked</div>
+        <div className="relative">
+          <div
+            className="text-sm text-muted-foreground mb-1 tracking-wide flex items-center gap-1.5 cursor-help"
+            onMouseEnter={() => setShowTvlTooltip(true)}
+            onMouseLeave={() => setShowTvlTooltip(false)}
+          >
+            TVL
+            <Info className="w-3.5 h-3.5 opacity-50" />
+          </div>
           <div className="text-xl font-semibold">{tvl}</div>
+
+          {/* TVL Tooltip */}
+          {showTvlTooltip && (
+            <div className="absolute left-0 top-full mt-1 px-3 py-1.5 bg-popover text-popover-foreground text-xs rounded-md shadow-lg border border-border whitespace-nowrap z-10 animate-fade-in-up">
+              Total Value Locked
+            </div>
+          )}
         </div>
       </div>
 
       <button
         onClick={handleDepositClick}
-        className="w-full bg-primary text-primary-foreground py-3.5 rounded-md font-medium hover:bg-primary/90 transition-all duration-300 group-hover:shadow-lg flex items-center justify-center gap-2"
+        className="w-full bg-primary text-primary-foreground py-3.5 rounded-md font-medium hover:bg-primary/90 transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-2"
       >
         Deposit
-        <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        <ArrowUpRight className="w-4 h-4 transition-transform hover:translate-x-0.5 hover:-translate-y-0.5" />
       </button>
     </div>
   );

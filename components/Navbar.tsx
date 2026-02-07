@@ -12,10 +12,12 @@ export default function Navbar() {
     <header className="border-b border-border/50 bg-background/95 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
         {/* Left side: Logo */}
-        <div className="flex items-center gap-4">
-          <span className="text-2xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
-            DELPHI
-          </span>
+        <div className="flex items-center">
+          <img
+            src="/images/Delphi Logo Full.png"
+            alt="Delphi"
+            className="h-10 w-auto object-contain"
+          />
         </div>
 
         {/* Right side: Network badge and Connect Wallet button */}

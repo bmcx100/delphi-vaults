@@ -1,21 +1,78 @@
 export default function Footer() {
   return (
-    <footer className="border-t border-border/50 mt-24">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-          <span className="text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
-            DELPHI
-          </span>
+    <footer className="mt-24 bg-primary relative overflow-hidden">
+      {/* Subtle gradient overlay for depth */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-accent/20 opacity-50" />
 
-          <div className="flex gap-8 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">Documentation</a>
-            <a href="#" className="hover:text-foreground transition-colors">Security</a>
-            <a href="#" className="hover:text-foreground transition-colors">Contact</a>
+      {/* Noise texture overlay */}
+      <div
+        className="absolute inset-0 opacity-[0.15] mix-blend-overlay"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat',
+        }}
+      />
+
+      {/* Subtle dot pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.08]"
+        style={{
+          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+        }}
+      />
+
+      <div className="relative max-w-7xl mx-auto px-6 py-12">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+          <div className="flex items-center">
+            <img
+              src="/images/Delphi Logo Full.png"
+              alt="Delphi"
+              className="h-7 w-auto object-contain brightness-0 invert opacity-95"
+            />
+          </div>
+
+          <div className="flex gap-8 text-sm" style={{ color: 'oklch(0.90 0.02 295)' }}>
+            <a
+              href="#"
+              className="transition-colors hover:brightness-110"
+              style={{ color: 'oklch(0.90 0.02 295)' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'oklch(0.97 0.01 300)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'oklch(0.90 0.02 295)'}
+            >
+              Documentation
+            </a>
+            <a
+              href="#"
+              className="transition-colors hover:brightness-110"
+              style={{ color: 'oklch(0.90 0.02 295)' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'oklch(0.97 0.01 300)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'oklch(0.90 0.02 295)'}
+            >
+              Security
+            </a>
+            <a
+              href="#"
+              className="transition-colors hover:brightness-110"
+              style={{ color: 'oklch(0.90 0.02 295)' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'oklch(0.97 0.01 300)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'oklch(0.90 0.02 295)'}
+            >
+              Contact
+            </a>
           </div>
         </div>
 
-        <div className="pt-8 border-t border-border/50 text-sm text-muted-foreground leading-relaxed space-y-4">
-          <p className="font-medium">Disclaimer</p>
+        <div
+          className="pt-8 border-t text-sm leading-relaxed space-y-4"
+          style={{
+            borderColor: 'oklch(0.70 0.15 300)',
+            color: 'oklch(0.88 0.02 295)'
+          }}
+        >
+          <p className="font-semibold" style={{ color: 'oklch(0.95 0.01 300)' }}>
+            Disclaimer
+          </p>
           <p>
             DELPHI is a decentralized finance interface for interacting with Ethereum smart contracts.
             By using this platform, you acknowledge that cryptocurrency investments carry significant risk.
@@ -29,7 +86,7 @@ export default function Footer() {
           <p>
             This interface is provided "as is" without warranty of any kind. Use at your own risk.
           </p>
-          <p className="pt-4">
+          <p className="pt-4 opacity-75">
             © 2024 DELPHI Protocol. All rights reserved.
           </p>
         </div>
