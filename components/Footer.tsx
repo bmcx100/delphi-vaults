@@ -1,8 +1,8 @@
 export default function Footer() {
   return (
-    <footer className="mt-24 relative overflow-hidden" style={{ backgroundColor: '#3d3d3d' }}>
+    <footer className="mt-24 relative overflow-hidden bg-[#3d3d3d] dark:bg-muted/30 dark:border-t dark:border-border/50">
       {/* Subtle gradient overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/10 opacity-50" />
+      <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/10 opacity-50 dark:from-primary/5 dark:to-primary/10" />
 
       {/* Noise texture overlay */}
       <div
@@ -27,18 +27,18 @@ export default function Footer() {
           <img
             src="/images/Delphi Logo Full.png"
             alt="Delphi"
-            className="h-7 w-auto object-contain brightness-0 invert opacity-95"
+            className="h-7 w-auto object-contain brightness-0 invert opacity-95 dark:brightness-100 dark:invert-0 dark:opacity-100"
           />
         </div>
 
         <div
-          className="pt-8 border-t text-sm leading-relaxed space-y-4"
+          className="pt-8 border-t text-sm leading-relaxed space-y-4 dark:border-border dark:text-muted-foreground"
           style={{
             borderColor: 'oklch(0.70 0.15 300)',
             color: 'oklch(0.88 0.02 295)'
           }}
         >
-          <p className="font-semibold" style={{ color: 'oklch(0.95 0.01 300)' }}>
+          <p className="font-semibold dark:text-foreground" style={{ color: 'oklch(0.95 0.01 300)' }}>
             Disclaimer
           </p>
           <p>
