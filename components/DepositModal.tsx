@@ -134,6 +134,14 @@ export default function DepositModal({
   };
 
   const handleDeposit = async () => {
+    // DEPOSIT FUNCTIONALITY DISABLED
+    onAddToast({
+      status: "failed",
+      message: "Deposit Not Available",
+    });
+    return;
+
+    /* COMMENTED OUT - Deposit execution disabled
     if (!isConnected || !address || !amount || parseFloat(amount) <= 0) {
       return;
     }
@@ -167,6 +175,7 @@ export default function DepositModal({
           : "Deposit failed. Please try again.",
       });
     }
+    */
   };
 
   const needsApproval = parseFloat(amount) > 0 && parseFloat(amount) > parseFloat(allowance);

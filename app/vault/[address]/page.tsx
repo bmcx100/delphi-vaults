@@ -221,6 +221,14 @@ export default function VaultDetailPage() {
   };
 
   const handleDeposit = async () => {
+    // DEPOSIT FUNCTIONALITY DISABLED
+    addToast({
+      status: "failed",
+      message: "Deposit Not Available",
+    });
+    return;
+
+    /* COMMENTED OUT - Deposit execution disabled
     if (!isConnected || !address || !amount || parseFloat(amount) <= 0 || !vaultData) {
       return;
     }
@@ -286,6 +294,7 @@ export default function VaultDetailPage() {
     } finally {
       setIsDepositing(false);
     }
+    */
   };
 
   const handleWithdraw = async () => {
