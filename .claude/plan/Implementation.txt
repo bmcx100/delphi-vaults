@@ -1,0 +1,169 @@
+Phase 1: Project Foundation
+Step 1 — Project Setup
+Create a new Next.js project
+Install Tailwind CSS and configure it
+Set up the folder structure: /components, /pages, /styles, /constants, /utils, /hooks, /abis
+Create a .env.local file with a placeholder for ALCHEMY_API_KEY
+Confirm the app runs locally with a blank page
+Step 2 — Design System
+Set up Tailwind custom theme in tailwind.config.js
+Define CSS variables for: primary color, secondary color, background, card background, text color, border color, accent/gradient colors
+Use placeholder colors for now (dark theme recommended for DeFi)
+Set the default font to a clean sans-serif (Inter or system sans-serif)
+Create a small test page that shows the colors and font to confirm everything works
+
+Phase 2: Static Layout (No Functionality)
+Step 3 — Navbar
+Build the navbar component
+Left side: "DELPHI" text logo in sans-serif
+Right side: A static "Connect Wallet" button (does nothing yet)
+Add a network badge that says "Ethereum" (static for now)
+Navbar should be fixed to the top of the page
+Step 4 — Vault Cards on Main Page
+Build a single horizontal vault card component
+It should display: asset icon placeholder, asset name, APY, TVL, and a Deposit button
+All data is hardcoded/static for now
+Render 3 cards stacked vertically on the main page
+Cards should be above the fold
+Add the headline above the cards: "DELPHI Staking" and "Connect. Deposit. Done."
+Step 5 — Below the Fold Content
+Add the "DeFi, Without the Headache" section below the vault cards
+Add the three-column flow: Deposit → Automated Vaults → Stay in Control
+Add the "Why DELPHI" section with the five points
+Add the "Security by Design" section
+All static text, no interactivity
+Step 6 — Footer
+Build the footer component
+Include the full DELPHI disclaimer text
+Keep it simple and minimal
+Step 7 — Vault Detail Page
+Create a new page route: /vault/[address]
+Build the vault header: asset icon placeholder, vault name, contract address (static text, styled like a link)
+Build the stats bar: APY, TVL, Price Per Share, Fees — all hardcoded
+Build the "Your Position" panel (left side) with placeholder values: Deposited, Shares, Earnings — show a "Connect wallet to view" message for now
+Build the action panel (right side) with a Deposit/Withdraw tab toggle, an amount input field, a Max button, a "You receive" estimate line, and Approve + Deposit/Withdraw buttons — none of these do anything yet
+Add the strategy info section with placeholder name and description
+Add the brand line: "You interact with one platform. The contracts handle the rest."
+Add the footer
+Step 8 — Navigation Wiring
+Make the Deposit button on each vault card on the main page do nothing for now (we'll wire the modal later)
+Add a clickable area on each vault card (the name or a "Details" link) that navigates to /vault/[address]
+Add the "← Vaults" back button on the vault detail page that navigates to the main page
+Confirm navigation works between both pages
+Step 9 — Responsive Design Pass
+Make the navbar stack properly on mobile
+Make vault cards full-width on mobile
+Make the three-column flow stack to single column on mobile
+Make the vault detail page stack the Position panel above the Action panel on mobile
+Test at common breakpoints: mobile (375px), tablet (768px), desktop (1280px)
+
+Phase 3: Wallet Connection
+Step 10 — MetaMask Connection Logic
+Create a useWallet custom hook in /hooks
+It should handle: connect, disconnect, store wallet address, store chain ID
+Detect if MetaMask is installed
+Store connected state
+Step 11 — Connect Wallet Button (Live)
+Wire the navbar "Connect Wallet" button to the useWallet hook
+When clicked: trigger MetaMask connection popup
+When connected: replace button text with truncated wallet address (e.g., 0x1a2b...3c4d)
+Add a dropdown or click action to disconnect
+If MetaMask is not installed: show a message directing user to install it
+Step 12 — Network Validation
+Check if the connected wallet is on Ethereum Mainnet (chain ID 1)
+If wrong network: show an error banner at the top of the page asking the user to switch
+Update the network badge in the navbar to reflect actual connected network
+
+Phase 4: Live Vault Data
+Step 13 — yDaemon API Integration
+Create a utility function in /utils that fetches vault data from yDaemon
+Fetch data for each hardcoded vault address: GET https://ydaemon.yearn.fi/1/vaults/[address]
+Parse the response: name, symbol, APY (net), TVL, price per share, fees, strategies, underlying token info
+Step 14 — Replace Hardcoded Data on Main Page
+Replace the static vault card data with live data from yDaemon
+Show loading skeleton states while data is being fetched
+Handle error states if the API call fails
+Step 15 — Replace Hardcoded Data on Vault Detail Page
+Replace all static stats with live yDaemon data
+Replace strategy info with live strategy name and description
+Make the contract address link to Etherscan: https://etherscan.io/address/[address]
+Show loading skeleton states while data is being fetched
+
+Phase 5: Deposit Flow
+Step 16 — Deposit Modal (UI Only)
+Build the deposit modal component
+It should show: vault name, asset icon, amount input, Max button, estimated shares, Approve button, Deposit button
+Wire the Deposit button on each vault card to open this modal with the correct vault info
+Clicking outside the modal or an X button closes it
+No blockchain interaction yet
+Step 17 — Read User Token Balance
+When the modal opens and wallet is connected: read the user's balance of the vault's underlying token (e.g., USDC) using ethers.js
+Display this balance in the modal above the input field as "Available: X USDC"
+Wire the Max button to fill the input with this balance
+Step 18 — Token Approval
+Create the ERC-20 approve transaction logic
+When the user clicks Approve: send an approval for the exact entered amount (not unlimited) to the vault contract
+Show a pending state while the transaction is confirming
+Once confirmed: hide the Approve button and enable the Deposit button
+Check existing allowance first — if already approved for enough, skip straight to Deposit
+Step 19 — Deposit Transaction
+Create the deposit transaction logic using the ERC-4626 ABI
+Before submitting: check maxDeposit to confirm the vault will accept the amount
+When the user clicks Deposit: call vault.deposit(amount, userAddress)
+Show pending state while transaction confirms
+On success: show confirmation with Etherscan link, close modal, refresh vault data
+On failure: show error message
+Step 20 — Transaction Notifications
+Build a toast/notification component
+Show it when any transaction is submitted (approval or deposit)
+Include: status (pending/confirmed/failed), Etherscan link
+Auto-dismiss after a few seconds on success
+Persist on failure until user dismisses
+
+Phase 6: Withdraw Flow
+Step 21 — Read User Vault Position
+On the vault detail page, when wallet is connected: read the user's vault share balance using vault.balanceOf(userAddress)
+Convert shares to estimated asset value using vault.convertToAssets(shares)
+Display in the "Your Position" panel: deposited value, shares held
+If no position: show "No active position"
+Step 22 — Withdraw Transaction
+Wire the Withdraw tab on the vault detail page action panel
+When in Withdraw mode: show the user's share balance, Max button fills with full balance
+Before submitting: check maxRedeem
+When the user clicks Withdraw: call vault.redeem(shares, userAddress, userAddress, maxLoss)
+Set maxLoss to a sensible default (e.g., 100 basis points / 1%)
+Show pending state, confirmation with Etherscan link, or error
+On success: refresh position data
+Step 23 — Deposit Tab on Detail Page
+Wire the Deposit tab on the vault detail page to use the same logic as the modal
+Same flow: check balance, approve, deposit
+This gives users two ways to deposit: modal from main page or tab on detail page
+
+Phase 7: Polish & Safety
+Step 24 — Error Handling Audit
+Review every user interaction and confirm clear error messages for:
+Wallet not connected (prompt to connect)
+Wrong network (prompt to switch)
+Insufficient balance
+Transaction rejected by user
+Transaction failed on chain
+yDaemon API unavailable
+MetaMask not installed
+Step 25 — Loading States Audit
+Confirm every data-dependent element has a skeleton/loading state
+Vault cards on main page
+Stats on detail page
+User position
+Token balance in deposit modal
+Step 26 — Final Responsive Pass
+Test the complete app at all breakpoints
+Test the deposit modal on mobile
+Test transaction notifications on mobile
+Confirm nothing overflows or breaks
+Step 27 — Environment & Deployment Prep
+Move Alchemy API key to server-side environment variable
+Confirm no sensitive keys are exposed client-side
+Set up Vercel project
+Configure environment variables in Vercel
+Deploy and test on live URL
+

@@ -1,0 +1,96 @@
+"use client";
+
+import { ArrowUpRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+interface VaultCardProps {
+  assetName: string;
+  assetSymbol: string;
+  apy: number;
+  tvl: string;
+  vaultAddress: string;
+  tokenAddress: string;
+  index?: number;
+  onDeposit?: () => void;
+}
+
+export default function VaultCard({
+  assetName,
+  assetSymbol,
+  apy,
+  tvl,
+  vaultAddress,
+  tokenAddress,
+  index = 0,
+  onDeposit
+}: VaultCardProps) {
+  const router = useRouter();
+
+  const handleCardClick = () => {
+    router.push(`/vault/${vaultAddress}`);
+  };
+
+  const handleDepositClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDeposit) {
+      onDeposit();
+    }
+  };
+
+  return (
+    <div
+      onClick={handleCardClick}
+      className={`group relative bg-card border border-border rounded-lg p-8 hover:shadow-xl transition-all duration-500 opacity-0 animate-fade-in-up animate-delay-${index * 100 + 300} cursor-pointer`}
+    >
+      {/* Subtle top accent */}
+      <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+
+      <div className="flex items-start justify-between mb-6">
+        <div className="flex items-center gap-4">
+          {/* Asset icon */}
+          <img
+            src={`https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${tokenAddress}/logo.png`}
+            alt={assetSymbol}
+            className="w-12 h-12 rounded-full"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center hidden">
+            <span className="text-xl font-bold text-primary">{assetSymbol.charAt(0)}</span>
+          </div>
+
+          <div>
+            <h3 className="text-2xl font-semibold tracking-tight">{assetName}</h3>
+            <span className="text-sm font-medium text-muted-foreground">
+              {assetSymbol}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-6 mb-8">
+        <div>
+          <div className="text-sm text-muted-foreground mb-1 tracking-wide">APY</div>
+          <div className="text-3xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
+            {apy.toFixed(2)}%
+          </div>
+        </div>
+
+        <div>
+          <div className="text-sm text-muted-foreground mb-1 tracking-wide">Total Value Locked</div>
+          <div className="text-xl font-semibold">{tvl}</div>
+        </div>
+      </div>
+
+      <button
+        onClick={handleDepositClick}
+        className="w-full bg-primary text-primary-foreground py-3.5 rounded-md font-medium hover:bg-primary/90 transition-all duration-300 group-hover:shadow-lg flex items-center justify-center gap-2"
+      >
+        Deposit
+        <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+      </button>
+    </div>
+  );
+}
