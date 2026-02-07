@@ -23,44 +23,12 @@ export default function Footer() {
       />
 
       <div className="relative max-w-7xl mx-auto px-6 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-          <div className="flex items-center">
-            <img
-              src="/images/Delphi Logo Full.png"
-              alt="Delphi"
-              className="h-7 w-auto object-contain brightness-0 invert opacity-95"
-            />
-          </div>
-
-          <div className="flex gap-8 text-sm" style={{ color: 'oklch(0.90 0.02 295)' }}>
-            <a
-              href="#"
-              className="transition-colors hover:brightness-110"
-              style={{ color: 'oklch(0.90 0.02 295)' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'oklch(0.97 0.01 300)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'oklch(0.90 0.02 295)'}
-            >
-              Documentation
-            </a>
-            <a
-              href="#"
-              className="transition-colors hover:brightness-110"
-              style={{ color: 'oklch(0.90 0.02 295)' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'oklch(0.97 0.01 300)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'oklch(0.90 0.02 295)'}
-            >
-              Security
-            </a>
-            <a
-              href="#"
-              className="transition-colors hover:brightness-110"
-              style={{ color: 'oklch(0.90 0.02 295)' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'oklch(0.97 0.01 300)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'oklch(0.90 0.02 295)'}
-            >
-              Contact
-            </a>
-          </div>
+        <div className="flex justify-center items-center mb-8">
+          <img
+            src="/images/Delphi Logo Full.png"
+            alt="Delphi"
+            className="h-7 w-auto object-contain brightness-0 invert opacity-95"
+          />
         </div>
 
         <div

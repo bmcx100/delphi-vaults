@@ -1,0 +1,135 @@
+How It Works Page — Implementation Guide
+Follow each step in order. Match all styling (fonts, colors, spacing, components) to the existing site pages.
+
+Step 1: Create the Page File & Route
+
+Create a new page file: HowItWorks.tsx (or .jsx) in the same directory as existing pages.
+Add a route for /how-it-works in the router config (same file/pattern used for other pages).
+Import the shared layout wrapper (header, footer, nav) used by other pages.
+Verify the page loads at /how-it-works with placeholder text before continuing.
+
+
+Step 2: Build the Hero / Simple Overview Section
+This is the top section the user sees first.
+
+Add a page heading: "How It Works" — use the same heading component/style as other page titles on the site.
+Add a subheading: "Earn through automated vaults"
+Build a 3-step flow diagram arranged horizontally (stack vertically on mobile):
+
+StepLabelDescription1DepositDeposit supported tokens into a DELPHI vault. No strategy selection. No protocol management.2Vault AutomationThe vault automatically allocates capital across integrated DeFi protocols, managing positions in real time.3Earn & WithdrawRewards are compounded automatically. Withdraw your funds at any time — no lockups.
+
+Connect the three steps visually with arrows (→) or a connector line between them.
+Below each step box, add a short caption:
+
+Step 1: "Deposit tokens"
+Step 2: "Auto-allocate & rebalance"
+Step 3: "Compound + exit"
+
+
+
+Styling notes:
+
+Reuse any card or box component from the existing site.
+Use the site's existing icon set if available (e.g., wallet icon for Deposit, gear/loop icon for Automation, arrow-up/check icon for Earn).
+The flow should feel like a pipeline: left-to-right on desktop, top-to-bottom on mobile.
+
+
+Step 3: Build the "How the Vaults Work (Technical)" Section
+This section has 5 subsections. Use an accordion/collapsible pattern if the site already has one; otherwise use stacked content blocks with clear subheadings.
+3a — Vault Architecture
+
+Subheading: "Vault architecture"
+Content:
+
+Each vault is a non-custodial smart contract system designed to deploy user capital across multiple yield-generating strategies while minimizing manual intervention and operational risk. Vaults do not rely on a single protocol or position. Instead, they dynamically manage capital across a set of predefined strategies.
+
+
+
+3b — Capital Allocation
+
+Subheading: "Capital allocation"
+Content — describe the deposit flow:
+
+Funds are pooled inside the vault contract.
+Capital is allocated across integrated protocols based on predefined strategy logic.
+Allocation weights adjust over time as conditions change.
+
+
+Then list protocol types:
+
+Lending markets
+Liquidity pools
+Fee-generating automated market maker positions
+
+
+
+3c — Automation & Rebalancing
+
+Subheading: "Automation & rebalancing"
+Content — vaults continuously perform:
+
+Rebalancing positions to maintain target exposure
+Adjusting liquidity ranges where applicable
+Migrating capital between strategies when risk or yield profiles change
+
+
+Add note: "All actions are executed automatically via smart contracts."
+
+3d — Compounding & Gas Optimization
+
+Subheading: "Compounding & gas optimization"
+Content:
+
+Rewards are periodically harvested
+Returns are reinvested back into the vault
+Actions are batched to reduce gas costs per user
+
+
+Add note: "This allows vaults to compound yield efficiently without requiring manual claims."
+
+3e — Risk Controls
+
+Subheading: "Risk controls"
+Content — each vault operates within defined constraints:
+
+Strategy allocation limits
+Exposure caps per protocol
+Automated guards to prevent undesired states
+
+
+Add note: "Vault parameters can be updated as protocols or market conditions evolve."
+
+
+Step 4: Build the "User Control" Section
+Two sub-blocks side by side (or stacked on mobile):
+4a — Non-custodial by design
+
+Users retain ownership of their assets at all times.
+Vaults cannot withdraw user funds without user interaction.
+Withdrawals are permissionless and available at any time.
+
+4b — Transparency
+
+Vault positions are fully on-chain.
+Performance and allocations can be tracked in real time.
+No hidden leverage or off-chain activity.
+
+Styling notes:
+
+If the site has a two-column feature block or icon+text grid, reuse it here.
+Consider using a lock/shield icon for "Non-custodial" and an eye/chain icon for "Transparency."
+
+
+Step 5: Add the Summary & CTA
+
+Add a short summary line: "One deposit. Fully automated yield."
+Below it, add a secondary line: "DELPHI vaults abstract away protocol complexity while preserving transparency, control, and flexibility."
+Add a prominent CTA button: "View Vaults" — link it to the vaults page (use the same button component and style as other primary CTAs on the site).
+
+
+Step 6: Responsive & Polish
+
+Mobile breakpoints: Ensure the 3-step flow stacks vertically. Technical subsections should be full-width. The two-column User Control section should stack.
+Spacing: Match vertical spacing (padding/margins between sections) to other pages.
+Animations (optional): If other pages use scroll-triggered animations (fade-in, slide-up), apply the same to each section here.
+Navigation: Add "How It Works" to the site nav/menu in the correct position.

@@ -20,6 +20,19 @@ export default function Navbar() {
           />
         </div>
 
+        {/* Center: Navigation Links */}
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+          <a href="/how-it-works" className="text-foreground/70 hover:text-foreground transition-colors">
+            How It Works
+          </a>
+          <a href="#" className="text-foreground/70 hover:text-foreground transition-colors">
+            Whitepaper
+          </a>
+          <a href="#" className="text-foreground/70 hover:text-foreground transition-colors">
+            Security
+          </a>
+        </nav>
+
         {/* Right side: Network badge and Connect Wallet button */}
         <div className="flex items-center gap-4">
           {chain && (
