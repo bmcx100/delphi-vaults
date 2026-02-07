@@ -3,6 +3,7 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { ChevronDown } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   const { chain } = useAccount();
@@ -35,8 +36,9 @@ export default function Navbar() {
           </a>
         </nav>
 
-        {/* Right side: Network badge and Connect Wallet button */}
+        {/* Right side: Theme toggle, Network badge and Connect Wallet button */}
         <div className="flex items-center gap-4">
+          <ThemeToggle />
           {chain && (
             <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium ${
               isWrongNetwork ? "bg-destructive/10 text-destructive" : "bg-muted"
