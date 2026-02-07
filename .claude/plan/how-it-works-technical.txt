@@ -1,0 +1,180 @@
+Step 3: Build the "How the Vaults Work (Technical)" Section
+This section has 5 subsections displayed as an accordion (collapsible panels). Each panel has two layers of content: a general description visible on expand, and a technical deep-dive block below it with a distinct visual treatment.
+Accordion UI Requirements
+
+Component: Build or reuse a collapsible accordion component. Each item has a clickable header row that toggles the panel open/closed.
+Behavior: Only one panel open at a time (single-expand) — or allow multiple if the site's existing accordions do. Default state: all collapsed on page load.
+Header row: Display the subsection title on the left and a chevron icon (▼ / ▲) on the right that rotates on toggle.
+Animation: Smooth height transition on open/close (e.g., max-height + CSS transition, or framer-motion / site's existing animation library).
+Panel content structure (applies to every panel):
+
+┌─────────────────────────────────────────────────┐
+│  ► Section Title                           ▼    │  ← clickable header
+├─────────────────────────────────────────────────┤
+│                                                 │
+│  [General description — plain language]         │  ← always visible when open
+│                                                 │
+│  ┌─ Technical Deep-Dive ──────────────────────┐ │
+│  │                                             │ │  ← visually distinct block
+│  │  [Ethereum / smart contract details]        │ │     (different bg color,
+│  │  [Code references in monospace]             │ │      border, or callout card)
+│  │                                             │ │
+│  └─────────────────────────────────────────────┘ │
+│                                                 │
+└─────────────────────────────────────────────────┘
+
+Styling for the technical block: Use a subtle background color shift (e.g., slightly darker or a muted accent), a left border accent, or a callout/card component to separate it from the general text. Render any function signatures or Solidity references in monospace font.
+
+
+3a — Vault Architecture
+Accordion title: "Vault Architecture"
+General description:
+
+Each vault is a non-custodial smart contract system designed to deploy user capital across multiple yield-generating strategies while minimizing manual intervention and operational risk. Vaults do not rely on a single protocol or position. Instead, they dynamically manage capital across a set of predefined strategies.
+
+Technical deep-dive:
+
+ERC-4626 Tokenized Vault Standard
+
+DELPHI vaults implement the ERC-4626 standard — Ethereum's standardized interface for tokenized yield-bearing vaults. This is what makes composability and automation possible.
+When a user deposits an ERC-20 token (e.g., USDC, WETH, DAI), the vault mints a corresponding vault share token back to the user. This share token is itself an ERC-20, meaning it is transferable, composable, and can be integrated into other DeFi protocols.
+The share token represents a proportional claim on the vault's total assets. As the vault earns yield, the value of each share increases — users don't need to claim rewards manually.
+
+
+Key contract methods (render in monospace):
+
+deposit(assets, receiver) — sends ERC-20 tokens to the vault; mints shares to the receiver based on the current exchange rate.
+withdraw(assets, receiver, owner) — redeems shares and returns underlying ERC-20 tokens. No lockup at the contract level.
+totalAssets() — returns the vault's total managed value on-chain, used to calculate the share-to-asset exchange rate.
+
+
+Why ERC-4626 matters:
+
+Standardized interface means wallets, dashboards, and other protocols can read vault state without custom integrations.
+Share tokens are fully on-chain ERC-20s — users always retain custody via their wallet.
+Composability: vault shares can potentially be used as collateral or liquidity in other protocols.
+
+
+
+
+3b — Capital Allocation
+Accordion title: "Capital Allocation"
+General description:
+
+When assets are deposited, funds are pooled inside the vault contract. Capital is then allocated across integrated protocols based on predefined strategy logic, and allocation weights adjust over time as conditions change. Protocols may include lending markets, liquidity pools, and fee-generating automated market maker positions.
+
+Technical deep-dive:
+
+Strategy contracts & delegatecall pattern
+
+The vault delegates capital deployment to individual Strategy contracts — isolated Solidity contracts each responsible for interacting with one external protocol (e.g., Aave, Compound, Uniswap V3).
+The vault calls each strategy via its interface to deposit, withdraw, or harvest. Strategy contracts hold protocol-specific logic (e.g., supplying tokens to a lending pool and receiving aTokens or cTokens in return).
+This modular architecture means new strategies can be added or deprecated without redeploying the core vault contract.
+
+
+On-chain allocation weights
+
+Each strategy has an allocation weight stored on-chain (e.g., 40% lending, 35% LP, 25% AMM fees).
+Weights are set by governance or an authorized allocator role and can be read by anyone via the vault's public state.
+When totalAssets() is called, the vault queries each strategy's balanceOf() to aggregate the true on-chain value across all positions.
+
+
+Token flow example (render as a diagram or sequential list):
+
+User calls deposit(1000 USDC, user) on the vault.
+Vault mints share tokens to user.
+Vault routes 400 USDC → Lending Strategy (receives aUSDC), 350 USDC → LP Strategy (mints LP tokens), 250 USDC → AMM Strategy (opens concentrated position).
+
+
+
+
+3c — Automation & Rebalancing
+Accordion title: "Automation & Rebalancing"
+General description:
+
+Vaults continuously rebalance positions to maintain target exposure, adjust liquidity ranges where applicable, and migrate capital between strategies when risk or yield profiles change. All actions are executed automatically via smart contracts.
+
+Technical deep-dive:
+
+Keeper network & off-chain triggers
+
+Rebalancing transactions are submitted by keeper bots — automated off-chain agents that monitor on-chain conditions and call vault functions when thresholds are met.
+Keepers can be powered by services like Chainlink Automation (formerly Keepers) or Gelato Network, which provide decentralized, incentivized transaction execution.
+The vault contract itself enforces all validation on-chain — keepers can only trigger predefined actions, never move funds to arbitrary addresses.
+
+
+Rebalancing logic
+
+The vault compares current allocation percentages against target weights. When drift exceeds a configurable threshold (e.g., ±5%), a rebalance is triggered.
+For concentrated liquidity positions (e.g., Uniswap V3), the vault's strategy contract can call decreaseLiquidity() and increaseLiquidity() on the NonfungiblePositionManager to adjust tick ranges as price moves.
+Rebalancing is gated by on-chain modifiers (e.g., onlyKeeper, time-locks) to prevent unauthorized or excessive calls.
+
+
+MEV protection
+
+Swaps executed during rebalancing can be routed through DEX aggregators (e.g., 1inch, Paraswap) or private mempools (e.g., Flashbots Protect) to minimize front-running and sandwich attacks.
+Slippage limits are enforced at the contract level — if a swap returns fewer tokens than the minimum, the transaction reverts.
+
+
+
+
+3d — Compounding & Gas Optimization
+Accordion title: "Compounding & Gas Optimization"
+General description:
+
+Rewards are periodically harvested and reinvested back into the vault. Actions are batched to reduce gas costs per user. This allows vaults to compound yield efficiently without requiring manual claims.
+
+Technical deep-dive:
+
+Harvest & reinvest cycle
+
+Strategy contracts call claim() or getReward() on the underlying protocol to collect accrued rewards (e.g., COMP tokens from Compound, AAVE tokens from Aave, trading fees from Uniswap positions).
+Reward tokens are swapped back to the vault's base asset (e.g., USDC) via on-chain DEX routes. The swap is encoded in the harvest calldata so it executes atomically in one transaction.
+The converted assets are redeposited into strategies, increasing totalAssets() and therefore the value of every user's share tokens — compounding happens at the vault level, not per-user.
+
+
+Gas socialization
+
+Harvesting and compounding are executed as single transactions that benefit all depositors. The gas cost is effectively shared ("socialized") across all vault participants.
+For a vault with 500 depositors, one harvest transaction replaces 500 individual claim + swap + redeposit transactions — reducing total gas consumption by orders of magnitude.
+Harvest frequency is tuned so that the yield gained per compound exceeds the gas cost of the transaction (i.e., the vault only compounds when it is net-positive for depositors).
+
+
+EIP-1559 & gas estimation
+
+Keeper bots use EIP-1559 fee parameters (maxFeePerGas, maxPriorityFeePerGas) to submit transactions with predictable costs.
+The vault's off-chain infrastructure monitors the base fee from block headers and delays non-urgent harvests to periods of lower gas prices (e.g., weekends or off-peak hours) to further optimize costs.
+
+
+
+
+3e — Risk Controls
+Accordion title: "Risk Controls"
+General description:
+
+Each vault operates within defined constraints: strategy allocation limits, exposure caps per protocol, and automated guards to prevent undesired states. Vault parameters can be updated as protocols or market conditions evolve.
+
+Technical deep-dive:
+
+On-chain guardrails
+
+Each strategy has a hard allocation cap stored in the vault contract (e.g., no single strategy can hold more than 50% of total vault assets). Deposits that would breach a cap are automatically routed to other strategies.
+A global exposure limit per protocol prevents over-concentration — even if multiple strategies use the same underlying protocol (e.g., two different Aave markets), their combined exposure is bounded.
+These limits are enforced by require() checks in Solidity — they cannot be bypassed, even by the vault owner or keepers.
+
+
+Circuit breakers & emergency functions
+
+Vaults implement a pause mechanism (following the OpenZeppelin Pausable pattern). When paused, deposits and strategy deployments halt, but user withdrawals remain active.
+An emergency revokeStrategy(address) function can pull all capital from a compromised strategy back to the vault's idle balance in one transaction.
+Pause authority is held by a multisig (e.g., Gnosis Safe) or a timelock contract — no single private key can halt or alter the vault unilaterally.
+
+
+Audit & verification
+
+Vault and strategy contracts are designed to be verified on Etherscan so that any user can read the source code and confirm the logic matches the documentation.
+Access control uses role-based permissions (OpenZeppelin AccessControl): separate roles for KEEPER_ROLE, ALLOCATOR_ROLE, and GUARDIAN_ROLE, each with scoped powers.
+Oracle dependencies (if any, e.g., for pricing) use Chainlink price feeds with staleness checks — if a price feed is stale beyond a threshold, the vault pauses affected operations rather than acting on outdated data.
+
+
+

@@ -90,122 +90,241 @@ export default function HowItWorks() {
               {/* 3a: Vault Architecture */}
               <AccordionItem value="item-1">
                 <AccordionTrigger className="text-xl font-semibold">
-                  Vault architecture
+                  Vault Architecture
                 </AccordionTrigger>
-                <AccordionContent>
+                <AccordionContent className="space-y-6">
                   <p className="text-muted-foreground leading-relaxed">
                     Each vault is a non-custodial smart contract system designed to deploy user capital across multiple yield-generating strategies while minimizing manual intervention and operational risk. Vaults do not rely on a single protocol or position. Instead, they dynamically manage capital across a set of predefined strategies.
                   </p>
+
+                  <div className="border-l-4 border-primary bg-muted/50 p-6 rounded-r-md space-y-4">
+                    <h4 className="font-semibold text-lg mb-3">Technical Deep-Dive</h4>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">ERC-4626 Tokenized Vault Standard</h5>
+                      <p className="text-muted-foreground leading-relaxed mb-3">
+                        DELPHI vaults implement the ERC-4626 standard — Ethereum's standardized interface for tokenized yield-bearing vaults. This is what makes composability and automation possible.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed mb-3">
+                        When a user deposits an ERC-20 token (e.g., USDC, WETH, DAI), the vault mints a corresponding vault share token back to the user. This share token is itself an ERC-20, meaning it is transferable, composable, and can be integrated into other DeFi protocols.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed">
+                        The share token represents a proportional claim on the vault's total assets. As the vault earns yield, the value of each share increases — users don't need to claim rewards manually.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">Key contract methods</h5>
+                      <div className="space-y-2 font-mono text-sm bg-card p-4 rounded border border-border">
+                        <div><span className="text-primary">deposit</span>(assets, receiver)</div>
+                        <div><span className="text-primary">withdraw</span>(assets, receiver, owner)</div>
+                        <div><span className="text-primary">totalAssets</span>()</div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">Why ERC-4626 matters</h5>
+                      <ul className="space-y-2 text-muted-foreground text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary mt-1">•</span>
+                          <span>Standardized interface means wallets, dashboards, and other protocols can read vault state without custom integrations.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary mt-1">•</span>
+                          <span>Share tokens are fully on-chain ERC-20s — users always retain custody via their wallet.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary mt-1">•</span>
+                          <span>Composability: vault shares can potentially be used as collateral or liquidity in other protocols.</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
 
               {/* 3b: Capital Allocation */}
               <AccordionItem value="item-2">
                 <AccordionTrigger className="text-xl font-semibold">
-                  Capital allocation
+                  Capital Allocation
                 </AccordionTrigger>
-                <AccordionContent>
-                  <p className="text-muted-foreground leading-relaxed mb-4">
-                    Funds are pooled inside the vault contract. Capital is allocated across integrated protocols based on predefined strategy logic. Allocation weights adjust over time as conditions change.
+                <AccordionContent className="space-y-6">
+                  <p className="text-muted-foreground leading-relaxed">
+                    When assets are deposited, funds are pooled inside the vault contract. Capital is then allocated across integrated protocols based on predefined strategy logic, and allocation weights adjust over time as conditions change. Protocols may include lending markets, liquidity pools, and fee-generating automated market maker positions.
                   </p>
-                  <ul className="space-y-2 text-muted-foreground">
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Lending markets</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Liquidity pools</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Fee-generating automated market maker positions</span>
-                    </li>
-                  </ul>
+
+                  <div className="border-l-4 border-primary bg-muted/50 p-6 rounded-r-md space-y-4">
+                    <h4 className="font-semibold text-lg mb-3">Technical Deep-Dive</h4>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">Strategy contracts & delegatecall pattern</h5>
+                      <p className="text-muted-foreground leading-relaxed mb-3">
+                        The vault delegates capital deployment to individual Strategy contracts — isolated Solidity contracts each responsible for interacting with one external protocol (e.g., Aave, Compound, Uniswap V3).
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed">
+                        This modular architecture means new strategies can be added or deprecated without redeploying the core vault contract.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">On-chain allocation weights</h5>
+                      <p className="text-muted-foreground leading-relaxed mb-3">
+                        Each strategy has an allocation weight stored on-chain (e.g., 40% lending, 35% LP, 25% AMM fees).
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed text-sm">
+                        When totalAssets() is called, the vault queries each strategy's balanceOf() to aggregate the true on-chain value across all positions.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">Token flow example</h5>
+                      <ol className="space-y-2 text-muted-foreground text-sm list-decimal list-inside">
+                        <li>User calls deposit(1000 USDC, user) on the vault</li>
+                        <li>Vault mints share tokens to user</li>
+                        <li>Vault routes: 400 USDC → Lending Strategy, 350 USDC → LP Strategy, 250 USDC → AMM Strategy</li>
+                      </ol>
+                    </div>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
 
               {/* 3c: Automation & Rebalancing */}
               <AccordionItem value="item-3">
                 <AccordionTrigger className="text-xl font-semibold">
-                  Automation & rebalancing
+                  Automation & Rebalancing
                 </AccordionTrigger>
-                <AccordionContent>
-                  <p className="text-muted-foreground leading-relaxed mb-4">
-                    Vaults continuously perform:
+                <AccordionContent className="space-y-6">
+                  <p className="text-muted-foreground leading-relaxed">
+                    Vaults continuously rebalance positions to maintain target exposure, adjust liquidity ranges where applicable, and migrate capital between strategies when risk or yield profiles change. All actions are executed automatically via smart contracts.
                   </p>
-                  <ul className="space-y-2 text-muted-foreground mb-4">
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Rebalancing positions to maintain target exposure</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Adjusting liquidity ranges where applicable</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Migrating capital between strategies when risk or yield profiles change</span>
-                    </li>
-                  </ul>
-                  <p className="text-sm italic text-muted-foreground">
-                    All actions are executed automatically via smart contracts.
-                  </p>
+
+                  <div className="border-l-4 border-primary bg-muted/50 p-6 rounded-r-md space-y-4">
+                    <h4 className="font-semibold text-lg mb-3">Technical Deep-Dive</h4>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">Keeper network & off-chain triggers</h5>
+                      <p className="text-muted-foreground leading-relaxed mb-3">
+                        Rebalancing transactions are submitted by keeper bots — automated off-chain agents that monitor on-chain conditions and call vault functions when thresholds are met.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed text-sm">
+                        The vault contract itself enforces all validation on-chain — keepers can only trigger predefined actions, never move funds to arbitrary addresses.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">Rebalancing logic</h5>
+                      <p className="text-muted-foreground leading-relaxed mb-3">
+                        The vault compares current allocation percentages against target weights. When drift exceeds a configurable threshold (e.g., ±5%), a rebalance is triggered.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed text-sm">
+                        For concentrated liquidity positions (e.g., Uniswap V3), the vault's strategy contract can adjust tick ranges as price moves.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">MEV protection</h5>
+                      <p className="text-muted-foreground leading-relaxed text-sm">
+                        Swaps executed during rebalancing can be routed through DEX aggregators or private mempools to minimize front-running and sandwich attacks. Slippage limits are enforced at the contract level.
+                      </p>
+                    </div>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
 
               {/* 3d: Compounding & Gas Optimization */}
               <AccordionItem value="item-4">
                 <AccordionTrigger className="text-xl font-semibold">
-                  Compounding & gas optimization
+                  Compounding & Gas Optimization
                 </AccordionTrigger>
-                <AccordionContent>
-                  <ul className="space-y-2 text-muted-foreground mb-4">
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Rewards are periodically harvested</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Returns are reinvested back into the vault</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Actions are batched to reduce gas costs per user</span>
-                    </li>
-                  </ul>
-                  <p className="text-sm italic text-muted-foreground">
-                    This allows vaults to compound yield efficiently without requiring manual claims.
+                <AccordionContent className="space-y-6">
+                  <p className="text-muted-foreground leading-relaxed">
+                    Rewards are periodically harvested and reinvested back into the vault. Actions are batched to reduce gas costs per user. This allows vaults to compound yield efficiently without requiring manual claims.
                   </p>
+
+                  <div className="border-l-4 border-primary bg-muted/50 p-6 rounded-r-md space-y-4">
+                    <h4 className="font-semibold text-lg mb-3">Technical Deep-Dive</h4>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">Harvest & reinvest cycle</h5>
+                      <p className="text-muted-foreground leading-relaxed mb-3">
+                        Strategy contracts call claim() or getReward() on the underlying protocol to collect accrued rewards (e.g., COMP tokens from Compound, AAVE tokens from Aave, trading fees from Uniswap positions).
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed text-sm">
+                        Reward tokens are swapped back to the vault's base asset via on-chain DEX routes. The converted assets are redeposited into strategies, increasing totalAssets() — compounding happens at the vault level, not per-user.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">Gas socialization</h5>
+                      <p className="text-muted-foreground leading-relaxed mb-3">
+                        Harvesting and compounding are executed as single transactions that benefit all depositors. The gas cost is effectively shared across all vault participants.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed text-sm">
+                        For a vault with 500 depositors, one harvest transaction replaces 500 individual transactions — reducing total gas consumption by orders of magnitude.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">EIP-1559 & gas estimation</h5>
+                      <p className="text-muted-foreground leading-relaxed text-sm">
+                        Keeper bots use EIP-1559 fee parameters to submit transactions with predictable costs. The vault's infrastructure monitors base fees and delays non-urgent harvests to periods of lower gas prices.
+                      </p>
+                    </div>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
 
               {/* 3e: Risk Controls */}
               <AccordionItem value="item-5">
                 <AccordionTrigger className="text-xl font-semibold">
-                  Risk controls
+                  Risk Controls
                 </AccordionTrigger>
-                <AccordionContent>
-                  <p className="text-muted-foreground leading-relaxed mb-4">
-                    Each vault operates within defined constraints:
+                <AccordionContent className="space-y-6">
+                  <p className="text-muted-foreground leading-relaxed">
+                    Each vault operates within defined constraints: strategy allocation limits, exposure caps per protocol, and automated guards to prevent undesired states. Vault parameters can be updated as protocols or market conditions evolve.
                   </p>
-                  <ul className="space-y-2 text-muted-foreground mb-4">
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Strategy allocation limits</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Exposure caps per protocol</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Automated guards to prevent undesired states</span>
-                    </li>
-                  </ul>
-                  <p className="text-sm italic text-muted-foreground">
-                    Vault parameters can be updated as protocols or market conditions evolve.
-                  </p>
+
+                  <div className="border-l-4 border-primary bg-muted/50 p-6 rounded-r-md space-y-4">
+                    <h4 className="font-semibold text-lg mb-3">Technical Deep-Dive</h4>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">On-chain guardrails</h5>
+                      <p className="text-muted-foreground leading-relaxed mb-3">
+                        Each strategy has a hard allocation cap stored in the vault contract (e.g., no single strategy can hold more than 50% of total vault assets).
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed text-sm">
+                        These limits are enforced by require() checks in Solidity — they cannot be bypassed, even by the vault owner or keepers.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">Circuit breakers & emergency functions</h5>
+                      <p className="text-muted-foreground leading-relaxed mb-3">
+                        Vaults implement a pause mechanism. When paused, deposits and strategy deployments halt, but user withdrawals remain active.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed text-sm">
+                        Pause authority is held by a multisig or timelock contract — no single private key can halt or alter the vault unilaterally.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h5 className="font-semibold mb-2">Audit & verification</h5>
+                      <ul className="space-y-2 text-muted-foreground text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary mt-1">•</span>
+                          <span>Contracts are verified on Etherscan so users can read the source code</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary mt-1">•</span>
+                          <span>Role-based permissions with scoped powers for each role</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary mt-1">•</span>
+                          <span>Chainlink price feeds with staleness checks to prevent outdated data usage</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
