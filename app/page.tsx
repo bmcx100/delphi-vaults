@@ -83,7 +83,7 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-6 pt-20 pb-16">
         <div className="max-w-3xl mb-16 opacity-0 animate-fade-in-up animate-delay-100">
           <h1
-            className="text-6xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6"
+            className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6"
             style={{ fontFamily: "var(--font-display)" }}
           >
             DELPHI Vaults

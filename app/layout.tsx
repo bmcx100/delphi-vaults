@@ -40,9 +40,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                const theme = localStorage.getItem('theme');
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (theme === 'dark' || (!theme && prefersDark)) {
+                var theme = localStorage.getItem('theme');
+                if (theme !== 'light') {
                   document.documentElement.classList.add('dark');
                 }
               })();

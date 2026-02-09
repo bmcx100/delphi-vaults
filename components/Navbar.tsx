@@ -1,42 +1,45 @@
 "use client";
 
+import { useState } from 'react';
+import Link from 'next/link';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Menu, X } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   const { chain } = useAccount();
   const isWrongNetwork = chain && chain.id !== 1;
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="border-b border-border/50 bg-background/95 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
         {/* Left side: Logo */}
         <div className="flex items-center">
-          <a href="/">
+          <Link href="/">
             <img
               src="/images/Delphi Logo Full.png"
               alt="Delphi"
               className="h-10 w-auto object-contain cursor-pointer"
             />
-          </a>
+          </Link>
         </div>
 
-        {/* Center: Navigation Links */}
+        {/* Center: Navigation Links (desktop) */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <a href="/how-it-works" className="text-foreground/70 hover:text-foreground transition-colors">
+          <Link href="/how-it-works" className="text-foreground/70 hover:text-foreground transition-colors">
             How It Works
-          </a>
-          <a href="/whitepaper" className="text-foreground/70 hover:text-foreground transition-colors">
+          </Link>
+          <Link href="/whitepaper" className="text-foreground/70 hover:text-foreground transition-colors">
             Whitepaper
-          </a>
-          <a href="/security" className="text-foreground/70 hover:text-foreground transition-colors">
+          </Link>
+          <Link href="/security" className="text-foreground/70 hover:text-foreground transition-colors">
             Security
-          </a>
+          </Link>
         </nav>
 
-        {/* Right side: Theme toggle, Network badge and Connect Wallet button */}
+        {/* Right side: Theme toggle, Network badge, Connect Wallet, and Mobile menu button */}
         <div className="flex items-center gap-4">
           <ThemeToggle />
           {chain && (
@@ -104,8 +107,54 @@ export default function Navbar() {
               );
             }}
           </ConnectButton.Custom>
+
+          {/* Mobile menu toggle */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-foreground/70 hover:text-foreground transition-colors"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Navigation Menu */}
+      {mobileMenuOpen && (
+        <nav className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-4">
+            <Link
+              href="/how-it-works"
+              className="text-foreground/70 hover:text-foreground transition-colors text-sm font-medium py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              How It Works
+            </Link>
+            <Link
+              href="/whitepaper"
+              className="text-foreground/70 hover:text-foreground transition-colors text-sm font-medium py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Whitepaper
+            </Link>
+            <Link
+              href="/security"
+              className="text-foreground/70 hover:text-foreground transition-colors text-sm font-medium py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Security
+            </Link>
+            {chain && (
+              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium w-fit ${
+                isWrongNetwork ? "bg-destructive/10 text-destructive" : "bg-muted"
+              }`}>
+                <div className={`w-2 h-2 rounded-full ${isWrongNetwork ? "bg-destructive" : "bg-primary"}`}></div>
+                <span>{chain.name}</span>
+              </div>
+            )}
+          </div>
+        </nav>
+      )}
     </header>
   );
 }

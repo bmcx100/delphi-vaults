@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, ExternalLink, AlertCircle, X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import NetworkBanner from "@/components/NetworkBanner";
 import Footer from "@/components/Footer";
@@ -30,6 +30,7 @@ export default function VaultDetailPage() {
   const [isDepositing, setIsDepositing] = useState(false);
   const [tokenBalance, setTokenBalance] = useState<string>("0");
   const [allowance, setAllowance] = useState<string>("0");
+  const [showDepositNotice, setShowDepositNotice] = useState(false);
   const { address, isConnected } = useWallet();
   const { toasts, addToast, updateToast, dismissToast } = useToast();
 
@@ -220,81 +221,8 @@ export default function VaultDetailPage() {
     }
   };
 
-  const handleDeposit = async () => {
-    // DEPOSIT FUNCTIONALITY DISABLED
-    addToast({
-      status: "failed",
-      message: "Deposit Not Available",
-    });
-    return;
-
-    /* COMMENTED OUT - Deposit execution disabled
-    if (!isConnected || !address || !amount || parseFloat(amount) <= 0 || !vaultData) {
-      return;
-    }
-
-    let toastId: string | null = null;
-
-    try {
-      setIsDepositing(true);
-      const { ethereum } = window as any;
-      const provider = new BrowserProvider(ethereum);
-      const signer = await provider.getSigner();
-      const vaultContract = new Contract(params.address as string, ERC4626_ABI, signer);
-
-      const amountInWei = parseUnits(amount, vaultData.token.decimals);
-
-      // Check maxDeposit
-      const maxDeposit = await vaultContract.maxDeposit(address);
-      if (amountInWei > maxDeposit) {
-        addToast({
-          status: "failed",
-          message: `Amount exceeds maximum deposit limit of ${formatUnits(maxDeposit, vaultData.token.decimals)} ${cleanSymbol(vaultData.token.symbol)}`,
-        });
-        return;
-      }
-
-      // Execute deposit
-      const tx = await vaultContract.deposit(amountInWei, address);
-
-      toastId = addToast({
-        status: "pending",
-        message: "Deposit transaction pending...",
-        txHash: tx.hash,
-      });
-
-      await tx.wait();
-
-      updateToast(toastId, {
-        status: "confirmed",
-        message: "Deposit confirmed!",
-      });
-
-      // Refresh position and reset
-      setAmount("");
-      await refreshPosition();
-    } catch (error: any) {
-      console.error("Deposit error:", error);
-      if (toastId) {
-        updateToast(toastId, {
-          status: "failed",
-          message: error.code === 4001 ? "Transaction rejected by user" : "Deposit failed",
-        });
-      } else if (error.code === 4001) {
-        addToast({
-          status: "failed",
-          message: "Transaction rejected by user",
-        });
-      } else {
-        addToast({
-          status: "failed",
-          message: "Deposit failed. Please try again.",
-        });
-      }
-    } finally {
-      setIsDepositing(false);
-    }
-    */
+  const handleDeposit = () => {
+    setShowDepositNotice(true);
   };
 
   const handleWithdraw = async () => {
@@ -427,10 +355,10 @@ export default function VaultDetailPage() {
         </div>
 
         {/* Stats Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-12">
           {loading ? (
             <>
-              {[1, 2, 3, 4].map((i) => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="bg-card border border-border rounded-lg p-6 animate-pulse">
                   <div className="h-4 w-16 bg-muted rounded mb-2"></div>
                   <div className="h-8 w-20 bg-muted rounded"></div>
@@ -458,13 +386,6 @@ export default function VaultDetailPage() {
                 </div>
               </div>
 
-              <div className="bg-card border border-border rounded-lg p-6">
-                <div className="text-sm text-muted-foreground mb-2">Fees</div>
-                <div className="text-sm space-y-1">
-                  <div>Management: {((vaultData.apr?.fees?.management || 0) * 100).toFixed(1)}%</div>
-                  <div>Performance: {((vaultData.apr?.fees?.performance || 0) * 100).toFixed(0)}%</div>
-                </div>
-              </div>
             </>
           ) : null}
         </div>
@@ -592,34 +513,28 @@ export default function VaultDetailPage() {
               </div>
 
               <div className="space-y-3">
-                {activeTab === "deposit" && parseFloat(amount) > 0 && parseFloat(amount) > parseFloat(allowance) && (
+                {activeTab === "deposit" ? (
                   <button
-                    onClick={handleApprove}
-                    disabled={isApproving || !isConnected}
-                    className="w-full bg-secondary text-secondary-foreground py-3.5 rounded-md font-medium hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleDeposit}
+                    className="w-full bg-primary text-primary-foreground py-3.5 rounded-md font-medium hover:bg-primary/90 transition-colors"
                   >
-                    {isApproving ? "Approving..." : `Approve ${cleanSymbol(vaultData?.token.symbol || '')}`}
+                    Deposit
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleWithdraw}
+                    disabled={
+                      !isConnected ||
+                      !amount ||
+                      parseFloat(amount) <= 0 ||
+                      isWithdrawing ||
+                      parseFloat(amount) > parseFloat(userShares)
+                    }
+                    className="w-full bg-primary text-primary-foreground py-3.5 rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isWithdrawing ? "Withdrawing..." : "Withdraw"}
                   </button>
                 )}
-                <button
-                  onClick={activeTab === "withdraw" ? handleWithdraw : handleDeposit}
-                  disabled={
-                    !isConnected ||
-                    !amount ||
-                    parseFloat(amount) <= 0 ||
-                    (activeTab === "withdraw" && (isWithdrawing || parseFloat(amount) > parseFloat(userShares))) ||
-                    (activeTab === "deposit" && (isDepositing || parseFloat(amount) > parseFloat(allowance)))
-                  }
-                  className="w-full bg-primary text-primary-foreground py-3.5 rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {activeTab === "deposit"
-                    ? isDepositing
-                      ? "Depositing..."
-                      : "Deposit"
-                    : isWithdrawing
-                    ? "Withdrawing..."
-                    : "Withdraw"}
-                </button>
               </div>
             </div>
           </div>
@@ -659,6 +574,42 @@ export default function VaultDetailPage() {
 
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+
+      {/* Deposit Unavailable Notice */}
+      {showDepositNotice && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowDepositNotice(false); }}
+        >
+          <div className="bg-card border border-border rounded-lg max-w-sm w-full p-8 relative text-center">
+            <button
+              onClick={() => setShowDepositNotice(false)}
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex justify-center mb-5">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <AlertCircle className="w-6 h-6 text-primary" />
+              </div>
+            </div>
+
+            <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+              Deposits are currently unavailable as we review regulatory requirements.
+              <br /><br />
+              We will provide updates as appropriate.
+            </p>
+
+            <button
+              onClick={() => setShowDepositNotice(false)}
+              className="w-full bg-muted text-foreground py-3 rounded-md font-medium hover:bg-muted/80 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

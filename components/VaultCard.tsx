@@ -113,6 +113,10 @@ export default function VaultCard({
         Deposit
         <ArrowUpRight className="w-4 h-4 transition-transform hover:translate-x-0.5 hover:-translate-y-0.5" />
       </button>
+
+      <p className="text-[11px] text-muted-foreground/50 text-center mt-3 tracking-wide">
+        Select card for additional details
+      </p>
     </div>
   );
 }
