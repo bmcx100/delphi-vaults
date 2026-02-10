@@ -122,7 +122,7 @@ export default function Navbar() {
       {/* Mobile Navigation Menu */}
       {mobileMenuOpen && (
         <nav className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-4">
+          <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col items-end gap-4">
             <Link
               href="/how-it-works"
               className="text-foreground/70 hover:text-foreground transition-colors text-sm font-medium py-2"

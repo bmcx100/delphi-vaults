@@ -298,7 +298,7 @@ export default function VaultDetailPage() {
       <Navbar />
       <NetworkBanner />
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-6 md:py-12">
         {/* Back button */}
         <button
           onClick={() => router.push("/")}
@@ -309,7 +309,7 @@ export default function VaultDetailPage() {
         </button>
 
         {/* Vault Header */}
-        <div className="mb-12">
+        <div className="mb-6 md:mb-12">
           {loading ? (
             <div className="flex items-center gap-4 mb-4 animate-pulse">
               <div className="w-16 h-16 rounded-full bg-muted"></div>
@@ -355,33 +355,33 @@ export default function VaultDetailPage() {
         </div>
 
         {/* Stats Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-12">
           {loading ? (
             <>
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-card border border-border rounded-lg p-6 animate-pulse">
-                  <div className="h-4 w-16 bg-muted rounded mb-2"></div>
+                <div key={i} className="bg-card border border-border rounded-lg p-4 md:p-6 animate-pulse">
+                  <div className="h-4 w-16 bg-muted rounded md:mb-2"></div>
                   <div className="h-8 w-20 bg-muted rounded"></div>
                 </div>
               ))}
             </>
           ) : vaultData ? (
             <>
-              <div className="bg-card border border-border rounded-lg p-6">
-                <div className="text-sm text-muted-foreground mb-2">APY</div>
-                <div className="text-3xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
+              <div className="bg-card border border-border rounded-lg p-4 md:p-6 flex items-center justify-between md:block">
+                <div className="text-2xl font-bold md:text-sm md:font-normal text-muted-foreground md:mb-2">APY</div>
+                <div className="text-2xl md:text-3xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
                   {((vaultData.apr?.netAPR || 0) * 100).toFixed(2)}%
                 </div>
               </div>
 
-              <div className="bg-card border border-border rounded-lg p-6">
-                <div className="text-sm text-muted-foreground mb-2">TVL</div>
-                <div className="text-2xl font-semibold">{formatTVL(vaultData.tvl?.tvl || 0)}</div>
+              <div className="bg-card border border-border rounded-lg p-4 md:p-6 flex items-center justify-between md:block">
+                <div className="text-xl font-bold md:text-sm md:font-normal text-muted-foreground md:mb-2">TVL</div>
+                <div className="text-xl md:text-2xl font-semibold">{formatTVL(vaultData.tvl?.tvl || 0)}</div>
               </div>
 
-              <div className="bg-card border border-border rounded-lg p-6">
-                <div className="text-sm text-muted-foreground mb-2">Price Per Share</div>
-                <div className="text-2xl font-semibold">
+              <div className="bg-card border border-border rounded-lg p-4 md:p-6 flex items-center justify-between md:block">
+                <div className="text-xl font-bold md:text-sm md:font-normal text-muted-foreground md:mb-2">Price Per Share</div>
+                <div className="text-xl md:text-2xl font-semibold">
                   {formatPricePerShare(vaultData.pricePerShare, vaultData.decimals)}
                 </div>
               </div>
@@ -391,9 +391,9 @@ export default function VaultDetailPage() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
+        <div className="grid md:grid-cols-2 gap-8 mb-6 md:mb-12">
           {/* Your Position Panel */}
-          <div className="bg-card border border-border rounded-lg p-8">
+          <div className="bg-card border border-border rounded-lg p-8 order-2 md:order-1">
             <h2 className="text-2xl font-semibold mb-6" style={{ fontFamily: 'var(--font-display)' }}>
               Your Position
             </h2>
@@ -444,7 +444,7 @@ export default function VaultDetailPage() {
           </div>
 
           {/* Action Panel */}
-          <div className="bg-card border border-border rounded-lg p-8">
+          <div className="bg-card border border-border rounded-lg p-8 order-1 md:order-2">
             <div className="flex gap-4 mb-6 border-b border-border">
               <button
                 onClick={() => setActiveTab("deposit")}
@@ -514,12 +514,17 @@ export default function VaultDetailPage() {
 
               <div className="space-y-3">
                 {activeTab === "deposit" ? (
-                  <button
-                    onClick={handleDeposit}
-                    className="w-full bg-primary text-primary-foreground py-3.5 rounded-md font-medium hover:bg-primary/90 transition-colors"
-                  >
-                    Deposit
-                  </button>
+                  <div className="relative group">
+                    <button
+                      onClick={handleDeposit}
+                      className="w-full bg-primary text-primary-foreground py-3.5 rounded-md font-medium hover:bg-primary/90 transition-colors"
+                    >
+                      Deposit
+                    </button>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-card border border-border rounded-lg p-3 text-xs text-muted-foreground text-center shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-10">
+                      Deposits are currently unavailable as we review regulatory requirements.
+                    </div>
+                  </div>
                 ) : (
                   <button
                     onClick={handleWithdraw}

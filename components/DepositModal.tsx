@@ -123,13 +123,18 @@ export default function DepositModal({
               </div>
             </div>
 
-            <button
-              onClick={() => setShowNotice(true)}
-              className="w-full bg-primary text-primary-foreground py-3.5 rounded-md font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
-            >
-              Deposit
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
+            <div className="relative group">
+              <button
+                onClick={() => setShowNotice(true)}
+                className="w-full bg-primary text-primary-foreground py-3.5 rounded-md font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+              >
+                Deposit
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-card border border-border rounded-lg p-3 text-xs text-muted-foreground text-center shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-10">
+                Deposits are currently unavailable as we review regulatory requirements.
+              </div>
+            </div>
           </div>
         </div>
       )}
