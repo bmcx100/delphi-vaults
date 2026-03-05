@@ -13,9 +13,9 @@ import { useToast } from "@/hooks/useToast";
 
 // Vault addresses on Ethereum mainnet
 const VAULT_ADDRESSES = [
-  "0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE", // USDC Vault
-  "0xdA816459F1AB5631232FE5e97a05BBBb94970c95", // DAI Vault
-  "0xa258C4606Ca8206D8aA700cE2143D7db854D168c", // WETH Vault
+  "0xBe53A109B494E5c9f97b9Cd39Fe969BE68BF6204", // USDC Vault (V3)
+  "0x028eC7330ff87667b6dfb0D94b954c820195336c", // DAI Vault (V3)
+  "0xc56413869c6CDf96496f2b1eF801fEDBdFA7dDB0", // WETH Vault (V3)
 ];
 
 export default function Home() {
